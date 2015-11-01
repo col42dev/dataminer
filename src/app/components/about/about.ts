@@ -2,6 +2,7 @@ import {Component} from 'angular2/angular2';
 
 import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
+import {Location} from 'angular2/router';
 
 
 @Component({
@@ -18,5 +19,6 @@ export class About {
     constructor(params: RouteParams){
         this.id = params.get('id');
     }
+
 
 }

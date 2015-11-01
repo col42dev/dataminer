@@ -9,7 +9,7 @@ import { Simkvp } from './components/simkvp/simkvp';
 
 @RouteConfig([
  // new Route({path: '/', component: DataminerApp, as: 'Dataminer'}),
-   new Route({path: '/about', component: About, as: 'About'}),
+   new Route({path: '/', component: About, as: 'About'}),
    new Route({path: '/simkvp', component: Simkvp, as: 'Simkvp'})
 ])
 
@@ -18,7 +18,7 @@ import { Simkvp } from './components/simkvp/simkvp';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
@@ -33,4 +33,13 @@ export class DataminerApp {
         this.location = location;
     }
 
+    getLinkStyle(path) {
+
+        if(path === this.location.path()){
+            return true;
+        }
+        else if(path.length > 0){
+            return this.location.path().indexOf(path) > -1;
+        }
+    }
 }
