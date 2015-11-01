@@ -10,16 +10,16 @@ import {
   beforeEachProviders
 } from 'angular2/testing';
 import {provide} from 'angular2/angular2';
-import {SimKVP} from './sim-kvp';
+import {Simkvp} from './simkvp';
 
 
-describe('SimKVP Component', () => {
+describe('Simkvp Component', () => {
 
   beforeEachProviders(() => []);
 
 
   it('should ...', injectAsync([TestComponentBuilder], (tcb:TestComponentBuilder) => {
-    return tcb.createAsync(SimKVP).then((fixture) => {
+    return tcb.createAsync(Simkvp).then((fixture) => {
       fixture.detectChanges();
     });
   }));
