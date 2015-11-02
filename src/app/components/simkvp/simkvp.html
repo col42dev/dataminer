@@ -7,11 +7,12 @@
 <h4>Sim Key-Value Pairs</h4>
 
 <pre>
-<button (click)="importFromGoogleDocs()">Update from google document:</button> 
+<button (click)="importFromGoogleDocs()">Update from google document:</button>  {{googleDocJsonFeedUrl}}
 </pre>
-
-<textarea cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>
 
 <pre>
-<button (click)="exportToMyJSON()">Update to myjson server:</button> 
+<button (click)="exportToMyJSON()">Update to myjson server:</button> {{myJsonUrl}}
 </pre>
+
+<textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>
+
