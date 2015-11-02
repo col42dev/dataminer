@@ -23,7 +23,7 @@ export class Characterstats {
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/omsznkc/public/values?alt=json';
    
    
-    private characters: Array<Character>;
+    private characters;
     private columns: Array<Column>;
 
     
@@ -143,36 +143,37 @@ export class Characterstats {
     
     
     getColumns(): Array<Column> {
-        return [
-            new Column('charactertype','Character Type'),
-            new Column('maxhealth','Max Health'),
-            new Column('healthregen','Health Regen'),
-            new Column('lifesteal','Life Steel'),
-        ];
+            
+        var rowKeys = Object.keys(this.result['json']);
+        var colKeys = Object.keys(this.result['json'][rowKeys[3]]); //3 - skip past header fields!
+               
+        var thisColumns = [];
+ 
+        colKeys.forEach( function( thisKey) {
+            thisColumns.push( new Column( thisKey, thisKey));
+          }.bind( this));
+     
+        return thisColumns;
     }
     
     
-    getCharacters(): Array<Character> {
+    getCharacters() {
         var thisCharacters = [];
         
-        console.log('getCharacters');
-
         let rowKeys = Object.keys(this.result['json']);
         rowKeys.forEach( function( thisKey) {
-          thisCharacters.push( this.result['json'][thisKey]);
-          console.log(thisKey);
+            switch (thisKey) {
+              case 'title':
+              case 'version':
+              case 'lastEditDate':
+                break;
+              default:
+                thisCharacters.push( this.result['json'][thisKey]);
+                break;
+            }
         }.bind( this));
      
         return thisCharacters;
     }
     
-
-}
-
-
-interface Character {
-    charactertype:string;
-    maxhealth:string;
-    healthregen:number;
-    lifesteal:number;
 }
