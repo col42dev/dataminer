@@ -1,8 +1,10 @@
-import {Component} from 'angular2/angular2';
+import {Component, View, NgFor} from 'angular2/angular2';
 import {Http, Headers} from 'angular2/http'
 import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
+import {Grid} from './grid';
+import {Column} from './column';
 
 
 @Component({
@@ -10,22 +12,28 @@ import {Location} from 'angular2/router';
   templateUrl: 'app/components/characterstats/characterstats.html',
   styleUrls: ['app/components/characterstats/characterstats.css'],
   providers: [],
-  directives: [ROUTER_DIRECTIVES],
+  directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
 export class Characterstats {
 
-     private result: Object;
+    private result: Object;
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/339pe?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/omsznkc/public/values?alt=json';
    
+   
+    private characters: Array<Character>;
+    private columns: Array<Column>;
+
+    
     // 
     constructor(params: RouteParams, http: Http){
         this.http = http;
         this.result = { 'json':{}, 'text':'loading...'};
     
         this.importFromMyJSON();
+        
     }
     
     importFromMyJSON() {  
@@ -33,15 +41,21 @@ export class Characterstats {
       
       this.result = { 'json':{}, 'text':'loading...'};
      
-      this.http
-        .get(this.myJsonUrl)
+      this.http.get(this.myJsonUrl)  
         .map(res => res.json())
         .subscribe(
-          res => this.result  = { 'json':res, 'text':JSON.stringify(res, null, 2)}
+          res =>  this.populateResult( res)
          );
     }
     
-
+    populateResult( res) {
+      
+      this.result = { 'json':res, 'text':JSON.stringify(res, null, 2)};
+      
+      this.characters = this.getCharacters();
+      this.columns = this.getColumns();
+    }
+    
     importFromGoogleDocs() {  
       console.log('importFromGoogleDocs');
           
@@ -80,17 +94,26 @@ export class Characterstats {
         this.http.put(this.myJsonUrl, data, { headers: headers}) 
           .map(res => res.json())
           .subscribe(
-            //data => this.result['text'],
+            data => this.onExportToMyJsomSuccess(),
             err => console.log(err),
-            () => console.log('Authentication Complete')
+            () => console.log('MyJSON server has been updated.')
           ); 
     }
-    
-    
+        
+    onExportToMyJsomSuccess()
+    {
+         window.alert('MyJSON has been updated');
+    }
     
     parseGoogleDocJSON(res) {
       let  simvalues = this.result['json'];
+      let title = simvalues['title'];
+      let version = simvalues['version'];
+      let lastEditDate = simvalues['lastEditDate'];
       simvalues = {};
+      simvalues['title'] = title;
+      simvalues['version'] = version;
+      simvalues['lastEditDate'] = lastEditDate;
 
       for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
         var row: Object = {};
@@ -112,9 +135,44 @@ export class Characterstats {
         let characterType = res.feed.entry[rowIndex]['gsx$charactertype'].$t;
         simvalues[characterType] = row;    
       }
+      
+      window.alert('Updated. Now update myjson server to persist this change.');
        
       return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2)};
     }
     
+    
+    getColumns(): Array<Column> {
+        return [
+            new Column('charactertype','Character Type'),
+            new Column('maxhealth','Max Health'),
+            new Column('healthregen','Health Regen'),
+            new Column('lifesteal','Life Steel'),
+        ];
+    }
+    
+    
+    getCharacters(): Array<Character> {
+        var thisCharacters = [];
+        
+        console.log('getCharacters');
 
+        let rowKeys = Object.keys(this.result['json']);
+        rowKeys.forEach( function( thisKey) {
+          thisCharacters.push( this.result['json'][thisKey]);
+          console.log(thisKey);
+        }.bind( this));
+     
+        return thisCharacters;
+    }
+    
+
+}
+
+
+interface Character {
+    charactertype:string;
+    maxhealth:string;
+    healthregen:number;
+    lifesteal:number;
 }
