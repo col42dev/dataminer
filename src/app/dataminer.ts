@@ -5,12 +5,12 @@ import {ROUTER_DIRECTIVES, RouteConfig, Location,ROUTER_PROVIDERS, LocationStrat
 
 import { About } from './components/about/about';
 import { Simkvp } from './components/simkvp/simkvp';
-
+import { Characterstats } from './components/characterstats/characterstats';
 
 @RouteConfig([
- // new Route({path: '/', component: DataminerApp, as: 'Dataminer'}),
    new Route({path: '/', component: About, as: 'About'}),
-   new Route({path: '/simkvp', component: Simkvp, as: 'Simkvp'})
+   new Route({path: '/simkvp', component: Simkvp, as: 'Simkvp'}),
+   new Route({path: '/characterstats', component: Characterstats, as: 'Characterstats'})
 ])
 
 
@@ -18,7 +18,7 @@ import { Simkvp } from './components/simkvp/simkvp';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, Characterstats, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
@@ -26,8 +26,6 @@ export class DataminerApp {
   router: Router;
   location: Location;
     
-
-  
   constructor(router: Router, location: Location) {
         this.router = router;
         this.location = location;
