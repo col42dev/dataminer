@@ -16,7 +16,7 @@ export class Simkvp {
 
     private result: Object;
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/2zkwu?pretty=1';
+    private myJsonUrl: string = 'https://api.myjson.com/bins/4rrxs?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/otw4nb/public/values?alt=json';
    
     // 

@@ -1,6 +1,6 @@
 import {Component, View, NgFor} from 'angular2/angular2';
 import {Column} from './column';
-//import {Sorter} from './sorter';
+import {Sorter} from './sorter';
 
 @Component({
     selector: 'grid',
@@ -17,9 +17,9 @@ export class Grid {
     columns:Array<Column>;
     rows:Array<any>;
 
-    //sorter = new Sorter();
+    sorter = new Sorter();
 
     sort(key){
-        //this.sorter.sort(key, this.rows);
+        this.sorter.sort(key, this.rows);
     }
 }

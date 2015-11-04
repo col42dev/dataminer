@@ -1,6 +1,6 @@
 {
   "name": "dataminer",
-  "version": "0.0.0",
+  "version": "0.0.13",
   "license": "Apache-2.0",
   "dependencies": {
     "systemjs": "0.19.4",
