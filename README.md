@@ -1,4 +1,4 @@
-[Dataminer](https://github.com/col42dev/dataminer) is a development data flow manager for transferring data from google spreadsheets to http://myjson.com.
+[Dataminer](https://github.com/col42dev/dataminer) handles data conversions from google spreadsheets to http://myjson.com.
 
 
 ## build & development
