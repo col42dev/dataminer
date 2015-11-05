@@ -1,4 +1,4 @@
-[Dataminer](https://github.com/col42dev/dataminer) handles data data conversions from google spreadsheets to http://myjson.com.
+[Dataminer](https://github.com/col42dev/dataminer) handles data conversions from google spreadsheets to http://myjson.com.
 
 
 ## build & development
