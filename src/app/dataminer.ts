@@ -10,6 +10,7 @@ import { Simworkers } from './components/simworkers/simworkers';
 import { Playerprogression } from './components/playerprogression/playerprogression';
 import { Characterstats } from './components/characterstats/characterstats';
 import { Recipes } from './components/recipes/recipes';
+import { Unlocks } from './components/unlocks/unlocks';
 
 @RouteConfig([
    new Route({path: '/', component: About, as: 'About'}),
@@ -18,6 +19,7 @@ import { Recipes } from './components/recipes/recipes';
    new Route({path: '/simworkers', component: Simworkers, as: 'Simworkers'}),
    new Route({path: '/playerprogression', component: Playerprogression, as: 'Playerprogression'}),
    new Route({path: '/recipes', component: Recipes, as: 'Recipes'}),
+   new Route({path: '/unlocks', component: Unlocks, as: 'Unlocks'}),
    new Route({path: '/characterstats', component: Characterstats, as: 'Characterstats'})
 ])
 
@@ -26,7 +28,7 @@ import { Recipes } from './components/recipes/recipes';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Playerprogression, Recipes, ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Playerprogression, Recipes, Unlocks, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
