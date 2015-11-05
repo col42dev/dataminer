@@ -94,13 +94,13 @@ export class Characterstats {
         this.http.put(this.myJsonUrl, data, { headers: headers}) 
           .map(res => res.json())
           .subscribe(
-            data => this.onExportToMyJsomSuccess(),
+            data => this.onExportToMyJsonSuccess(),
             err => console.log(err),
             () => console.log('MyJSON server has been updated.')
           ); 
     }
         
-    onExportToMyJsomSuccess()
+    onExportToMyJsonSuccess()
     {
          window.alert('MyJSON has been updated');
     }

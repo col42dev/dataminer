@@ -5,19 +5,19 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 
 @Component({
-  selector: 'simkvp',
-  templateUrl: 'app/components/simkvp/simkvp.html',
-  styleUrls: ['app/components/simkvp/simkvp.css'],
+  selector: 'mapstate',
+  templateUrl: 'app/components/mapstate/mapstate.html',
+  styleUrls: ['app/components/mapstate/mapstate.css'],
   providers: [],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
-export class Simkvp {
+export class Mapstate {
 
     private result: Object;
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/4rrxs?pretty=1';
-    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/otw4nb/public/values?alt=json';
+    private myJsonUrl: string = 'https://api.myjson.com/bins/42y9a?pretty=1';
+    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oypka71/public/values?alt=json';
    
     // 
     constructor(params: RouteParams, http: Http){
@@ -53,9 +53,8 @@ export class Simkvp {
         console.log('exportToMyJSON');
         
         var formatted = this.result['json'];
-        formatted['title'] = 'simvalues';
+        formatted['title'] = 'mapstate';
         
- 
         var newVersionIdArray = [];
         if ( formatted.hasOwnProperty('version')) {
           newVersionIdArray = formatted['version'].split('.');
@@ -78,7 +77,7 @@ export class Simkvp {
           .subscribe(
             data => this.onExportToMyJsonSuccess(),
             err => console.log(err),
-            () => console.log('Authentication Complete')
+            () => console.log('Complete')
           ); 
     }
     
@@ -88,23 +87,29 @@ export class Simkvp {
     }
     
     parseGoogleDocJSON(res) {
-      var simvalues = this.result['json'];
-      simvalues['globals'] = {};
+      
+      var mapstate = this.result['json'];
+      mapstate['map'] = {};
+      mapstate['map']['rows'] = [];
 
       for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
-        var row = {};
-        var key = res.feed.entry[rowIndex]['gsx$key'].$t;
-
-        var value = res.feed.entry[rowIndex]['gsx$value'].$t;
-        if (!isNaN(value)) {
-            value = parseInt( value, 10);
+        var row = [];
+        var colIndex = 0;
+        while (res.feed.entry[rowIndex].hasOwnProperty('gsx$h'+(colIndex+1))) { 
+          var cell = res.feed.entry[rowIndex]['gsx$h'+(colIndex+1)];
+          var cellValue = cell.$t;
+          if (cellValue.length == 0) {
+              cellValue = '_';
+          }
+          row.push(cellValue  );
+          colIndex ++;
         }
-        simvalues['globals'][key] = value;
+        mapstate['map']['rows'].push(row);
       }
-      
-      window.alert('Updated. Now update myjson server to persist this change.');
        
-      return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2)};
+      window.alert('Updated. Now update myjson server to persist this change.');
+ 
+      return { 'json':mapstate, 'text':JSON.stringify(mapstate, null, 2)};
     }
 
 }

@@ -5,19 +5,19 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 
 @Component({
-  selector: 'simkvp',
-  templateUrl: 'app/components/simkvp/simkvp.html',
-  styleUrls: ['app/components/simkvp/simkvp.css'],
+  selector: 'simworkers',
+  templateUrl: 'app/components/simworkers/simworkers.html',
+  styleUrls: ['app/components/simworkers/simworkers.css'],
   providers: [],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
-export class Simkvp {
+export class Simworkers {
 
     private result: Object;
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/4rrxs?pretty=1';
-    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/otw4nb/public/values?alt=json';
+    private myJsonUrl: string = 'https://api.myjson.com/bins/4xb60?pretty=1';
+    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oxtnpr4/public/values?alt=json';
    
     // 
     constructor(params: RouteParams, http: Http){
@@ -37,7 +37,6 @@ export class Simkvp {
          );
     }
     
-
     importFromGoogleDocs() {  
       console.log('importFromGoogleDocs');
           
@@ -53,9 +52,8 @@ export class Simkvp {
         console.log('exportToMyJSON');
         
         var formatted = this.result['json'];
-        formatted['title'] = 'simvalues';
+        formatted['title'] = 'simworkers';
         
- 
         var newVersionIdArray = [];
         if ( formatted.hasOwnProperty('version')) {
           newVersionIdArray = formatted['version'].split('.');
@@ -78,7 +76,7 @@ export class Simkvp {
           .subscribe(
             data => this.onExportToMyJsonSuccess(),
             err => console.log(err),
-            () => console.log('Authentication Complete')
+            () => console.log('Complete')
           ); 
     }
     
@@ -88,23 +86,59 @@ export class Simkvp {
     }
     
     parseGoogleDocJSON(res) {
-      var simvalues = this.result['json'];
-      simvalues['globals'] = {};
+      
+      let simworkers = this.result['json'];
+     
+      simworkers['races'] = {};
+      simworkers['professions'] = {};
+
+      console.log( 'length:' + res.feed.entry.length);
+
+      var races = {};
+      var professions = {};
 
       for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
         var row = {};
-        var key = res.feed.entry[rowIndex]['gsx$key'].$t;
-
-        var value = res.feed.entry[rowIndex]['gsx$value'].$t;
-        if (!isNaN(value)) {
-            value = parseInt( value, 10);
+        var raceprofession = res.feed.entry[rowIndex].gsx$workerattribute.$t;
+        var rowdata = null;
+        if (raceprofession === 'Race') {
+          var race = res.feed.entry[rowIndex].gsx$workerraceprofession.$t;
+          if ( races.hasOwnProperty(race)  === false) {
+            races[race] = {};
+            races[race].levels = [];
+          }
+          rowdata = races[race];
+        } else if (raceprofession === 'Profession') {
+          var profession = res.feed.entry[rowIndex].gsx$workerraceprofession.$t;
+          if ( professions.hasOwnProperty(profession)  === false) {
+            professions[profession] = {};
+            professions[profession].levels = [];
+          }
+          rowdata = professions[profession];
         }
-        simvalues['globals'][key] = value;
+
+        var obj = {};
+        obj['cost'] = parseInt(res.feed.entry[rowIndex].gsx$workerlevelcost.$t, 10);
+        obj['level'] = parseInt(res.feed.entry[rowIndex].gsx$workerlevel.$t, 10);
+        obj['motives'] = {};
+        for (var motiveIndex = 0; motiveIndex < 6; motiveIndex++) { 
+          var keyNameId = 'gsx$workermotive' + (motiveIndex + 1)+ 'id';
+          var keyNameAmount = 'gsx$workermotive' + (motiveIndex + 1)+ 'amount';
+
+          var motiveTypeName = res.feed.entry[rowIndex][keyNameId].$t;
+          var motiveTypeAmount = parseInt(res.feed.entry[rowIndex][keyNameAmount].$t, 10);
+          obj['motives'][motiveTypeName] = motiveTypeAmount;
+        }
+
+        rowdata.levels.push(obj);
       }
+ 
+      simworkers['races'] = races;
+      simworkers['professions'] = professions;
       
       window.alert('Updated. Now update myjson server to persist this change.');
        
-      return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2)};
+      return { 'json':simworkers, 'text':JSON.stringify(simworkers, null, 2)};
     }
 
 }
