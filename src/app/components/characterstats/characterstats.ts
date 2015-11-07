@@ -17,7 +17,7 @@ import {Column} from './column';
 })
 export class Characterstats {
 
-    private result: Object;
+     result: Object;
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/339pe?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/omsznkc/public/values?alt=json';

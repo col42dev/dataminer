@@ -16,8 +16,8 @@ export class Mapstate {
 
     private result: Object;
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/42y9a?pretty=1';
-    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oypka71/public/values?alt=json';
+    private myJsonUrl: string = 'https://api.myjson.com/bins/1184a?pretty=1';
+    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o5onybx/public/values?alt=json';
    
     // 
     constructor(params: RouteParams, http: Http){
@@ -101,6 +101,9 @@ export class Mapstate {
           if (cellValue.length == 0) {
               cellValue = '_';
           }
+          
+          cellValue = cellValue.replace(/\s/g, '');
+          
           row.push(cellValue  );
           colIndex ++;
         }
