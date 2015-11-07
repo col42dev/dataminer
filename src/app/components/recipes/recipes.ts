@@ -66,6 +66,24 @@ export class Recipes {
         formatted['version'] = newVersionIdArray.join('.'); 
         formatted['lastEditDate'] = (new Date()).toString();
         
+        
+        var constructorDefines = {};
+        for ( var cdi = 0; cdi < Object.keys(formatted.craftableDefines).length; cdi ++) {
+
+            var keyname = Object.keys(formatted.craftableDefines)[cdi];
+            var construction = formatted.craftableDefines[keyname].construction[0];
+
+            console.log(construction);
+
+            if ( constructorDefines.hasOwnProperty(construction) === false) {
+                console.log('+');
+                constructorDefines[construction] = {};
+            }
+        }
+        
+        formatted['constructorDefines'] = constructorDefines;
+        
+        
         this.result['json'] = formatted;
         this.result['text'] = JSON.stringify(formatted, null, 2);
         
@@ -146,6 +164,11 @@ export class Recipes {
           recipe['recipename'] = res.feed.entry[i].gsx$recipename.$t;
           recipe['desc'] = res.feed.entry[i].gsx$recipedescription.$t;
           recipe['category'] = res.feed.entry[i].gsx$recipecategory.$t;
+          
+          if (res.feed.entry[i].gsx$recipesubcategory.$t.length>0) {
+            recipe['recipesubcategory'] = res.feed.entry[i].gsx$recipesubcategory.$t;
+          }
+  
   
           var recipeid = res.feed.entry[i].gsx$recipeid.$t;
           
