@@ -1,4 +1,4 @@
-<h4><a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=2124114841">UnlockProgression</a></h4>
+<h4><a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=2124114841">Progression Unlocks</a></h4>
 
 <pre>
 version: {{result['json']['version']}}
@@ -13,5 +13,9 @@ last edit date: {{result['json']['lastEditDate']}}
 <button (click)="exportToMyJSON()">Export to myjson server:</button> {{myJsonUrl}}
 </pre>
 
-<textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>
 
+<p></p>
+<grid [rows]="categories" [columns]="columns"></grid>
+
+<br/>
+<textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>
