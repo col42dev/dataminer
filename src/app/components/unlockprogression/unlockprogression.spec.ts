@@ -10,16 +10,16 @@ import {
   beforeEachProviders
 } from 'angular2/testing';
 import {provide} from 'angular2/angular2';
-import {Playerprogression} from './playerprogression';
+import {Unlockprogression} from './unlockprogression';
 
 
-describe('Playerprogression Component', () => {
+describe('Unlockprogression Component', () => {
 
   beforeEachProviders(() => []);
 
 
   it('should ...', injectAsync([TestComponentBuilder], (tcb:TestComponentBuilder) => {
-    return tcb.createAsync(Playerprogression).then((fixture) => {
+    return tcb.createAsync(Unlockprogression).then((fixture) => {
       fixture.detectChanges();
     });
   }));

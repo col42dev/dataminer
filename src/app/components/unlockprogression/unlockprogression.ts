@@ -5,19 +5,19 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 
 @Component({
-  selector: 'unlocks',
-  templateUrl: 'app/components/unlocks/unlocks.html',
-  styleUrls: ['app/components/unlocks/unlocks.css'],
+  selector: 'unlockprogression',
+  templateUrl: 'app/components/unlockprogression/unlockprogression.html',
+  styleUrls: ['app/components/unlockprogression/unlockprogression.css'],
   providers: [],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
-export class Unlocks {
+export class Unlockprogression {
 
     private result: Object;
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/2hewe?pretty=1';
-    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/os7bs54/public/values?alt=json';
+    private myJsonUrl: string = 'https://api.myjson.com/bins/28kay?pretty=1';
+    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oz4n58j/public/values?alt=json';
    
     // 
     constructor(params: RouteParams, http: Http){
@@ -53,7 +53,7 @@ export class Unlocks {
         console.log('exportToMyJSON 1');
         
         var formatted = {};
-        formatted['title'] = 'progression';
+        formatted['title'] = 'unlockprogression';
         
         var newVersionIdArray = [];
         if ( this.result['json'].hasOwnProperty('version')) {
@@ -94,31 +94,19 @@ export class Unlocks {
 
       let progressions = {};
       for (var i = 0; i < res.feed.entry.length; i++) {  
-        let progression = {};
-        let content = res.feed.entry[i].content;
-        let playerlevel = res.feed.entry[i].gsx$playerlevel.$t;
-        console.log( playerlevel);
-      
-        if (playerlevel.length > 0 ) {
-          progression['playerLevel'] = parseInt( res.feed.entry[i].gsx$playerlevel.$t, 10);
-          progression['playerXPNeeded'] = parseInt( res.feed.entry[i].gsx$playerxpneeded.$t, 10);      
-          progression['maxWorkers'] = parseInt( res.feed.entry[i].gsx$maxworkers.$t, 10);
-          progression['additionalMaxWorkersxp'] = parseInt( res.feed.entry[i].gsx$additionalmaxworkersxp.$t, 10);
-          progression['maxHeroes'] = parseInt( res.feed.entry[i].gsx$maxheroes.$t, 10);
-          progression['maxHeroesUnlocked'] = parseInt( res.feed.entry[i].gsx$maxheroesunlocked.$t, 10);
-          progression['maxDefenseMines'] = parseInt( res.feed.entry[i].gsx$maxdefensemines.$t, 10);
-          progression['maxDefenseTraps'] = parseInt( res.feed.entry[i].gsx$maxdefensetraps.$t, 10);
-          progression['maxDefenseTowers'] = parseInt( res.feed.entry[i].gsx$maxdefensetowers.$t, 10);
-          progression['maxCombatWaves'] = parseInt( res.feed.entry[i].gsx$maxcombatwaves.$t, 10);
-          progression['maxRooms'] = parseInt( res.feed.entry[i].gsx$maxrooms.$t, 10);
+        let subcategory = res.feed.entry[i].gsx$subcategory.$t;
+        let amounts = [];
+        for ( let level = 1; level <= 50; level ++) {
+          let propnameLevel = 'gsx$p' + level;
+          let amount = parseInt(res.feed.entry[i][propnameLevel].$t, 10); 
+          amounts.push( amount);
         }
-      
-        progressions[playerlevel] = progression;
+        progressions[subcategory] = amounts;
       }
 
       rootNode['data'] = progressions;
       
-      window.alert('Updated. Now export to myjson server.');
+      window.alert('Updated. Now update myjson server to persist this change.');
        
       return { 'json':rootNode, 'text':JSON.stringify(rootNode, null, 2)};
     }

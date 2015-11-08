@@ -7,19 +7,19 @@ import { About } from './components/about/about';
 import { Simkvp } from './components/simkvp/simkvp';
 import { Mapstate } from './components/mapstate/mapstate';
 import { Simworkers } from './components/simworkers/simworkers';
-import { Playerprogression } from './components/playerprogression/playerprogression';
 import { Characterstats } from './components/characterstats/characterstats';
 import { Recipes } from './components/recipes/recipes';
 import { Unlocks } from './components/unlocks/unlocks';
+import { Unlockprogression } from './components/unlockprogression/unlockprogression';
 
 @RouteConfig([
    new Route({path: '/', component: About, as: 'About'}),
    new Route({path: '/simkvp', component: Simkvp, as: 'Simkvp'}),
    new Route({path: '/mapstate', component: Mapstate, as: 'Mapstate'}),
    new Route({path: '/simworkers', component: Simworkers, as: 'Simworkers'}),
-   new Route({path: '/playerprogression', component: Playerprogression, as: 'Playerprogression'}),
    new Route({path: '/recipes', component: Recipes, as: 'Recipes'}),
    new Route({path: '/unlocks', component: Unlocks, as: 'Unlocks'}),
+   new Route({path: '/unlockprogression', component: Unlockprogression, as: 'Unlockprogression'}),
    new Route({path: '/characterstats', component: Characterstats, as: 'Characterstats'})
 ])
 
@@ -28,17 +28,20 @@ import { Unlocks } from './components/unlocks/unlocks';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Playerprogression, Recipes, Unlocks, ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
 
   router: Router;
   location: Location;
+  version: String;
     
   constructor(router: Router, location: Location) {
         this.router = router;
         this.location = location;
+        this.version = '';
+        
     }
 
     getLinkStyle(path) {
