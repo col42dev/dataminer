@@ -11,6 +11,7 @@ import { Characterstats } from './components/characterstats/characterstats';
 import { Recipes } from './components/recipes/recipes';
 import { Unlocks } from './components/unlocks/unlocks';
 import { Unlockprogression } from './components/unlockprogression/unlockprogression';
+import { Grid } from './components/grid/grid';
 
 @RouteConfig([
    new Route({path: '/', component: About, as: 'About'}),
@@ -28,20 +29,18 @@ import { Unlockprogression } from './components/unlockprogression/unlockprogress
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
 
   router: Router;
   location: Location;
-  version: String;
+  version = '0.0.20';
     
   constructor(router: Router, location: Location) {
         this.router = router;
-        this.location = location;
-        this.version = '';
-        
+        this.location = location;        
     }
 
     getLinkStyle(path) {

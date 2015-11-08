@@ -3,8 +3,8 @@ import {Http, Headers} from 'angular2/http'
 import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
-import {Grid} from './grid';
-import {Column} from './column';
+import { Grid } from '../grid/grid';
+import { Column } from '../grid/column';
 
 
 @Component({
@@ -17,12 +17,10 @@ import {Column} from './column';
 })
 export class Characterstats {
 
-     result: Object;
+    private result: Object;
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/339pe?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/omsznkc/public/values?alt=json';
-   
-   
     private characters;
     private columns: Array<Column>;
 
@@ -33,7 +31,6 @@ export class Characterstats {
         this.result = { 'json':{}, 'text':'loading...'};
     
         this.importFromMyJSON();
-        
     }
     
     importFromMyJSON() {  
@@ -49,16 +46,12 @@ export class Characterstats {
     }
     
     populateResult( res) {
-      
       this.result = { 'json':res, 'text':JSON.stringify(res, null, 2)};
-      
       this.characters = this.getCharacters();
       this.columns = this.getColumns();
     }
     
-    importFromGoogleDocs() {  
-      console.log('importFromGoogleDocs');
-          
+    importFromGoogleDocs() {   
       this.http
         .get(this.googleDocJsonFeedUrl)
         .map(res => res.json())
@@ -67,13 +60,10 @@ export class Characterstats {
          );
     }
     
-    exportToMyJSON() {
-        console.log('exportToMyJSON');
-        
+    exportToMyJSON() { 
         var formatted = this.result['json'];
         formatted['title'] = 'characterStats';
         
- 
         var newVersionIdArray = [];
         if ( formatted.hasOwnProperty('version')) {
           newVersionIdArray = formatted['version'].split('.');

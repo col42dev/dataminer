@@ -6,12 +6,10 @@ import {Sorter} from './sorter';
     selector: 'grid',
     inputs: ['rows: rows','columns: columns']
 })
-
 @View({
-    templateUrl: 'app/components/characterstats/grid.html',
+    templateUrl: 'app/components/grid/grid.html',
     directives: [NgFor]
 })
-
 export class Grid {
 
     columns:Array<Column>;
