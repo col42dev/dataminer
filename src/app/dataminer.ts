@@ -8,6 +8,7 @@ import { Simkvp } from './components/simkvp/simkvp';
 import { Mapstate } from './components/mapstate/mapstate';
 import { Simworkers } from './components/simworkers/simworkers';
 import { Characterstats } from './components/characterstats/characterstats';
+import { Charactercombatmodifiers } from './components/charactercombatmodifiers/charactercombatmodifiers';
 import { Recipes } from './components/recipes/recipes';
 import { Unlocks } from './components/unlocks/unlocks';
 import { Unlockprogression } from './components/unlockprogression/unlockprogression';
@@ -21,7 +22,8 @@ import { Grid } from './components/grid/grid';
    new Route({path: '/recipes', component: Recipes, as: 'Recipes'}),
    new Route({path: '/unlocks', component: Unlocks, as: 'Unlocks'}),
    new Route({path: '/unlockprogression', component: Unlockprogression, as: 'Unlockprogression'}),
-   new Route({path: '/characterstats', component: Characterstats, as: 'Characterstats'})
+   new Route({path: '/characterstats', component: Characterstats, as: 'Characterstats'}),
+   new Route({path: '/charactercombatmodifiers', component: Charactercombatmodifiers, as: 'Charactercombatmodifiers'})
 ])
 
 
@@ -29,14 +31,14 @@ import { Grid } from './components/grid/grid';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, Characterstats, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, Characterstats, Charactercombatmodifiers, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
 
   router: Router;
   location: Location;
-  version = '0.0.20';
+  version = '0.0.21';
     
   constructor(router: Router, location: Location) {
         this.router = router;
