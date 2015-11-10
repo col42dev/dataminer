@@ -94,12 +94,41 @@ export class Unlocks {
 
       let progressions = {};
       for (var i = 0; i < res.feed.entry.length; i++) {  
-        let progression = {};
+        var progression = {};
         let content = res.feed.entry[i].content;
         let playerlevel = res.feed.entry[i].gsx$playerlevel.$t;
         console.log( playerlevel);
       
         if (playerlevel.length > 0 ) {
+          
+          var fields = Object.keys(res.feed.entry[0]);
+          fields.forEach( function( thisKey) {
+            let includeKey = true;
+            
+            if (thisKey.indexOf('gsx$')==-1) {
+              includeKey = false;
+            }
+            
+            if (thisKey.indexOf('unused')!=-1) {
+              includeKey = false;
+            }
+            if (thisKey == 'gsx$playerlevel') {
+              includeKey = false;
+            }
+            
+            if (includeKey) {
+
+              var value = res.feed.entry[i][thisKey].$t
+              if (!isNaN(value)) {
+                value = parseInt( value, 10);
+              }
+              var keyName = thisKey.replace('gsx$', '');
+              progression[keyName] = value;
+            }
+            
+          }.bind(this));
+     
+          /*
           progression['playerLevel'] = parseInt( res.feed.entry[i].gsx$playerlevel.$t, 10);
           progression['playerXPNeeded'] = parseInt( res.feed.entry[i].gsx$playerxpneeded.$t, 10);      
           progression['maxWorkers'] = parseInt( res.feed.entry[i].gsx$maxworkers.$t, 10);
@@ -112,6 +141,7 @@ export class Unlocks {
           progression['attackModeRewardXP'] = parseInt( res.feed.entry[i].gsx$attackmoderewardxp.$t, 10);
           progression['maxCombatWaves'] = parseInt( res.feed.entry[i].gsx$maxcombatwaves.$t, 10);
           progression['maxRooms'] = parseInt( res.feed.entry[i].gsx$maxrooms.$t, 10);
+          */
         }
       
         progressions[playerlevel] = progression;

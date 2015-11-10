@@ -1,16 +1,18 @@
 <h4><a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=50208093">Sim Key-Value Pairs</a></h4>
 
+This exporter will automatically include new key-value pairs added to the <a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=50208093">SimValues</a> spreadsheet tab.
+
 <pre>
 version: {{result['json']['version']}}
 last edit date: {{result['json']['lastEditDate']}}
 </pre>
 
 <pre>
-<button (click)="importFromGoogleDocs()">Import from google document:</button>  {{googleDocJsonFeedUrl}}
+<button (click)="importFromGoogleDocs()"><span class="glyphicon glyphicon-import"></span> Import from google document:</button>  {{googleDocJsonFeedUrl}}
 </pre>
 
 <pre>
-<button (click)="exportToMyJSON()">Export to myjson server:</button> {{myJsonUrl}}
+<button (click)="exportToMyJSON()"><span class="glyphicon glyphicon-export"></span> Export to myjson server:</button> {{myJsonUrl}}
 </pre>
 
 <textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>

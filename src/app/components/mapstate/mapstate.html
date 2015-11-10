@@ -1,16 +1,19 @@
 <h4><a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=2098786375">MapState</a></h4>
 
+This exporter will automatically detect dimension changes made to the <a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=2098786375">Map</a> spreadsheet.<br/>
+The spreadsheet cell contents text is exported without modifications.
+
 <pre>
 version: {{result['json']['version']}}
 last edit date: {{result['json']['lastEditDate']}}
 </pre>
 
 <pre>
-<button (click)="importFromGoogleDocs()">Update from google document:</button>  {{googleDocJsonFeedUrl}}
+<button (click)="importFromGoogleDocs()"><span class="glyphicon glyphicon-import"></span> Update from google document:</button>  {{googleDocJsonFeedUrl}}
 </pre>
 
 <pre>
-<button (click)="exportToMyJSON()">Update to myjson server:</button> {{myJsonUrl}}
+<button (click)="exportToMyJSON()"><span class="glyphicon glyphicon-export"></span> Update to myjson server:</button> {{myJsonUrl}}
 </pre>
 
 <textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>

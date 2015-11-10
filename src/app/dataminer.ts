@@ -38,7 +38,7 @@ export class DataminerApp {
 
   router: Router;
   location: Location;
-  version = '0.0.23';
+  version = '0.0.24';
     
   constructor(router: Router, location: Location) {
         this.router = router;
