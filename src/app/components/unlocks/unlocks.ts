@@ -109,6 +109,7 @@ export class Unlocks {
           progression['maxDefenseMines'] = parseInt( res.feed.entry[i].gsx$maxdefensemines.$t, 10);
           progression['maxDefenseTraps'] = parseInt( res.feed.entry[i].gsx$maxdefensetraps.$t, 10);
           progression['maxDefenseTowers'] = parseInt( res.feed.entry[i].gsx$maxdefensetowers.$t, 10);
+          progression['attackModeRewardXP'] = parseInt( res.feed.entry[i].gsx$attackmoderewardxp.$t, 10);
           progression['maxCombatWaves'] = parseInt( res.feed.entry[i].gsx$maxcombatwaves.$t, 10);
           progression['maxRooms'] = parseInt( res.feed.entry[i].gsx$maxrooms.$t, 10);
         }
