@@ -4,6 +4,8 @@ import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 
+declare var AWS:any;
+
 @Component({
   selector: 'simkvp',
   templateUrl: 'app/components/simkvp/simkvp.html',
@@ -80,6 +82,31 @@ export class Simkvp {
             err => console.log(err),
             () => console.log('Authentication Complete')
           ); 
+        
+        //AWS  PUT
+        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
+        var itemParams = {
+            "TableName":"ptownrules", 
+            "Item": {
+                "ptownrules" : {"S":this.myJsonUrl},
+                "data" : {"S":data}   
+            }
+        };
+  
+        table.putItem(itemParams, function(err, data) {
+        
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(data);
+            }
+            /*
+            // Read the item from the table
+            table.getItem({Key: {id: {S: key}}}, function(err, data) {
+                console.log('getting...');
+                console.log(data.Item); // print the item data
+            });*/
+        });
     }
     
     onExportToMyJsonSuccess()

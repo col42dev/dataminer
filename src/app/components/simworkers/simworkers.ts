@@ -121,7 +121,7 @@ export class Simworkers {
         obj['cost'] = parseInt(res.feed.entry[rowIndex].gsx$workerlevelcost.$t, 10);
         obj['level'] = parseInt(res.feed.entry[rowIndex].gsx$workerlevel.$t, 10);
         obj['motives'] = {};
-        for (var motiveIndex = 0; motiveIndex < 6; motiveIndex++) { 
+        for (var motiveIndex = 0; motiveIndex < 8; motiveIndex++) { 
           var keyNameId = 'gsx$workermotive' + (motiveIndex + 1)+ 'id';
           var keyNameAmount = 'gsx$workermotive' + (motiveIndex + 1)+ 'amount';
 
