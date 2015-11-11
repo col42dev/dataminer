@@ -4,6 +4,8 @@ import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 
+declare var AWS:any;
+
 @Component({
   selector: 'unlocks',
   templateUrl: 'app/components/unlocks/unlocks.html',
@@ -81,6 +83,25 @@ export class Unlocks {
             err => console.log(err),
             () => console.log('Complete')
           ); 
+          
+          
+        //AWS  PUT 
+        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
+        var itemParams = {
+            "TableName":"ptownrules", 
+            "Item": {
+                "ptownrules" : {"S":this.myJsonUrl},
+                "data" : {"S":data}   
+            }
+        };
+  
+        table.putItem(itemParams, function(err, data) { 
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(data);
+            }
+        });
     }
     
     onExportToMyJsonSuccess()

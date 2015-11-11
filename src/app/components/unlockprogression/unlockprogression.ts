@@ -6,6 +6,8 @@ import {Location} from 'angular2/router';
 import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
 
+declare var AWS:any;
+
 @Component({
   selector: 'unlockprogression',
   templateUrl: 'app/components/unlockprogression/unlockprogression.html',
@@ -91,6 +93,25 @@ export class Unlockprogression {
             err => console.log(err),
             () => console.log('Complete')
           ); 
+          
+          
+        //AWS  PUT 
+        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
+        var itemParams = {
+            "TableName":"ptownrules", 
+            "Item": {
+                "ptownrules" : {"S":this.myJsonUrl},
+                "data" : {"S":data}   
+            }
+        };
+  
+        table.putItem(itemParams, function(err, data) { 
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(data);
+            }
+        });
     }
     
     onExportToMyJsonSuccess()
