@@ -1,5 +1,6 @@
 
-import {Component, View, bootstrap, provide} from 'angular2/angular2';
+import {Component, View, bootstrap, provide, NgIf} from 'angular2/angular2';
+import {Http, Headers} from 'angular2/http'
  
 
 import {ROUTER_DIRECTIVES, RouteConfig, Location,ROUTER_PROVIDERS, LocationStrategy, HashLocationStrategy, Route, AsyncRoute, Router} from 'angular2/router';
@@ -33,20 +34,54 @@ import { Grid } from './components/grid/grid';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, Characterstats, Charactercombatmodifiers, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, Craftystate, ROUTER_DIRECTIVES],
+  directives: [NgIf, About, Simkvp, Characterstats, Charactercombatmodifiers, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, Craftystate, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
 
   router: Router;
   location: Location;
-  version = '0.0.28';
+  http: Http;
+  version = '0.0.34';
+  liveVersion = '';
+  hasLatest:number = 0;
     
-  constructor(router: Router, location: Location) {
+    
+
+    
+  constructor(router: Router, location: Location, http: Http) {
         this.router = router;
-        this.location = location;         
+        this.location = location;   
+        this.http = http;   
+        
+        this.http
+        .get('https://api.myjson.com/bins/1t5wx')
+        .map(res => res.json())
+        .subscribe(
+          res => this.verifyLatestVersion(res)
+         );   
     }
 
+    verifyLatestVersion(latestVersion) {
+      
+      this.liveVersion = latestVersion['dataminer']['liveVersion'];
+      
+      var liveVersionIdArray = [];
+      liveVersionIdArray = latestVersion['dataminer']['liveVersion'].split('.');
+      let liveVersionMinorIndex:number = parseInt(liveVersionIdArray[2], 10);
+   
+      var loadedVersionIdArray = [];
+      loadedVersionIdArray = this.version.split('.');
+      let loadedVersionMinorIndex:number = parseInt(loadedVersionIdArray[2], 10);
+   
+      if (loadedVersionMinorIndex >= liveVersionMinorIndex) {
+        this.hasLatest = 1;
+      } else {
+        this.hasLatest = 0;
+      }
+      console.log( liveVersionIdArray[2] + ',' + loadedVersionIdArray[2]);
+    }
+    
     getLinkStyle(path) {
 
         if(path === this.location.path()){
