@@ -5,6 +5,8 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
+import {Myjsonio} from '../myjsonio/myjsonio';
+import {Dynamodbio} from '../dynamodbio/dynamodbio';
 
 
 declare var AWS:any;
@@ -13,47 +15,38 @@ declare var AWS:any;
   selector: 'characterstats',
   templateUrl: 'app/components/characterstats/characterstats.html',
   styleUrls: ['app/components/characterstats/characterstats.css'],
-  providers: [],
+  providers: [Myjsonio, Dynamodbio],
   directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
 export class Characterstats {
 
-    private result: Object;
+    private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/339pe?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/omsznkc/public/values?alt=json';
     private characters;
     private columns: Array<Column>;
+    private myjsonio : Myjsonio;
+    private dynamodbio : Dynamodbio; 
 
     
     // 
-    constructor(params: RouteParams, http: Http){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
         this.http = http;
-        this.result = { 'json':{}, 'text':'loading...'};
-    
-        this.importFromMyJSON();
+        this.myjsonio  = myjsonio;
+        this.dynamodbio  = dynamodbio;
+        this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
     }
     
-    importFromMyJSON() {  
-      console.log('importFromMyJSON');
-      
-      this.result = { 'json':{}, 'text':'loading...'};
-     
-      this.http.get(this.myJsonUrl)  
-        .map(res => res.json())
-        .subscribe(
-          res =>  this.populateResult( res)
-         );
+    onDynamodbImport( myresult : Object, _this) {
+      _this.result = myresult;
+      _this.characters = _this.getCharacters();
+      _this.columns = _this.getColumns();
     }
     
-    populateResult( res) {
-      this.result = { 'json':res, 'text':JSON.stringify(res, null, 2)};
-      this.characters = this.getCharacters();
-      this.columns = this.getColumns();
-    }
-    
-    importFromGoogleDocs() {   
+    handleImportFromGoogleDocs() {  
+          
       this.http
         .get(this.googleDocJsonFeedUrl)
         .map(res => res.json())
@@ -62,65 +55,22 @@ export class Characterstats {
          );
     }
     
-    exportToMyJSON() { 
-        var formatted = this.result['json'];
-        formatted['title'] = 'characterStats';
-        
-        var newVersionIdArray = [];
-        if ( formatted.hasOwnProperty('version')) {
-          newVersionIdArray = formatted['version'].split('.');
-        } else {
-          newVersionIdArray = ['0', '0', '0'];
-        } 
-        newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
-        formatted['version'] = newVersionIdArray.join('.'); 
-        formatted['lastEditDate'] = (new Date()).toString();
-        
-        this.result['json'] = formatted;
-        this.result['text'] = JSON.stringify(formatted, null, 2);
-        
-        var headers = new Headers();
-        headers.append('Content-Type', 'application/json; charset=utf-8');
-
-        let data: string = JSON.stringify(formatted, null, 2);
-        this.http.put(this.myJsonUrl, data, { headers: headers}) 
-          .map(res => res.json())
-          .subscribe(
-            data => this.onExportToMyJsonSuccess(),
-            err => console.log(err),
-            () => console.log('MyJSON server has been updated.')
-          ); 
-          
-        //AWS  PUT 
-        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
-        var itemParams = {
-            "TableName":"ptownrules", 
-            "Item": {
-                "ptownrules" : {"S":this.myJsonUrl},
-                "data" : {"S":data}   
-            }
-        };
-  
-        table.putItem(itemParams, function(err, data) { 
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(data);
-            }
-        });
+    handleExportToMyJSON() {
+         this.myjsonio.export2(this.myJsonUrl, this.result, 'characterStats');
     }
-        
-    onExportToMyJsonSuccess()
-    {
-         window.alert('MyJSON has been updated');
+    
+    handleExportToDynamoDB() {
+         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
     }
+    
     
     parseGoogleDocJSON(res) {
       let  simvalues = this.result['json'];
       let title = simvalues['title'];
       let version = simvalues['version'];
       let lastEditDate = simvalues['lastEditDate'];
-      simvalues = {};
+
+      simvalues['data'] = {};
       simvalues['title'] = title;
       simvalues['version'] = version;
       simvalues['lastEditDate'] = lastEditDate;
@@ -143,7 +93,7 @@ export class Characterstats {
         }.bind(this));
 
         let characterType = res.feed.entry[rowIndex]['gsx$charactertype'].$t;
-        simvalues[characterType] = row;    
+        simvalues['data'] [characterType] = row;    
       }
       
       window.alert('Updated. Now update myjson server to persist this change.');
@@ -154,8 +104,8 @@ export class Characterstats {
     
     getColumns(): Array<Column> {
             
-        var rowKeys = Object.keys(this.result['json']);
-        var colKeys = Object.keys(this.result['json'][rowKeys[3]]); //3 - skip past header fields!
+        var rowKeys = Object.keys(this.result['json']['data']);
+        var colKeys = Object.keys(this.result['json']['data'][rowKeys[3]]); //3 - skip past header fields!
                
         var thisColumns = [];
  
@@ -170,7 +120,7 @@ export class Characterstats {
     getCharacters() {
         var thisCharacters = [];
         
-        let rowKeys = Object.keys(this.result['json']);
+        let rowKeys = Object.keys(this.result['json']['data']);
         rowKeys.forEach( function( thisKey) {
             switch (thisKey) {
               case 'title':
@@ -178,7 +128,7 @@ export class Characterstats {
               case 'lastEditDate':
                 break;
               default:
-                thisCharacters.push( this.result['json'][thisKey]);
+                thisCharacters.push( this.result['json']['data'][thisKey]);
                 break;
             }
         }.bind( this));

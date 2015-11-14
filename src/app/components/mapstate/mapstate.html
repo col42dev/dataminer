@@ -9,11 +9,14 @@ last edit date: {{result['json']['lastEditDate']}}
 </pre>
 
 <pre>
-<button (click)="importFromGoogleDocs()"><span class="glyphicon glyphicon-import"></span> Update from google document:</button>  {{googleDocJsonFeedUrl}}
+<button (click)="handleImportFromGoogleDocs()"><span class="glyphicon glyphicon-import"></span> Import from google document:</button>  {{googleDocJsonFeedUrl}}
 </pre>
 
+
 <pre>
-<button (click)="exportToMyJSON()"><span class="glyphicon glyphicon-export"></span> Update to myjson server:</button> {{myJsonUrl}}
+<button (click)="handleExportToDynamoDB()"><span class="glyphicon glyphicon-export"></span> Export to AWS DynamoDB:</button>
+
+<button (click)="handleExportToMyJSON()"><span class="glyphicon glyphicon-export"></span> Export to myjson:</button> {{myJsonUrl}}
 </pre>
 
 <textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>

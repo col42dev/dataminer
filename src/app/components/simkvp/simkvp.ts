@@ -6,8 +6,6 @@ import {Location} from 'angular2/router';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
 
-declare var AWS:any;
-
 @Component({
   selector: 'simkvp',
   templateUrl: 'app/components/simkvp/simkvp.html',
@@ -49,27 +47,17 @@ export class Simkvp {
     }
     
     handleExportToMyJSON() {
-         this.myjsonio.export(this.myJsonUrl, this.cloneObject(this.result));
+         this.myjsonio.export2(this.myJsonUrl, this.result, 'simvalues');
     }
     
     handleExportToDynamoDB() {
-         this.dynamodbio.export(this.myJsonUrl, this.cloneObject(this.result));
-    }
-     
-    cloneObject(obj:Object) {
-        var clone = {};
-        for(var i in obj) {
-            if(typeof(obj[i])=="object" && obj[i] != null)
-                clone[i] = this.cloneObject(obj[i]);
-            else
-                clone[i] = obj[i];
-        }
-        return clone;
+         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simvalues');
     }
     
     parseGoogleDocJSON(res) {
       var simvalues = this.result['json'];
-      simvalues['globals'] = {};
+      simvalues['data'] = {};
+      simvalues['data']['globals'] = {};
 
       for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
         var row = {};
@@ -79,7 +67,7 @@ export class Simkvp {
         if (!isNaN(value)) {
             value = parseInt( value, 10);
         }
-        simvalues['globals'][key] = value;
+        simvalues['data']['globals'][key] = value;
       }
       
       window.alert('Import complete. Now export to persist this change.');

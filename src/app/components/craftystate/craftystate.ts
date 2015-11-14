@@ -3,6 +3,8 @@ import {Http, Headers} from 'angular2/http'
 import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
+import {Myjsonio} from '../myjsonio/myjsonio';
+import {Dynamodbio} from '../dynamodbio/dynamodbio';
 
 declare var AWS:any;
 
@@ -10,32 +12,27 @@ declare var AWS:any;
   selector: 'craftystate',
   templateUrl: 'app/components/craftystate/craftystate.html',
   styleUrls: ['app/components/craftystate/craftystate.css'],
-  providers: [],
+  providers: [Myjsonio, Dynamodbio],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
 export class Craftystate {
-
-    private result: Object;
+    private result: Object = { 'json':{}, 'text':'loading...'};;
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/1a9rm?pretty=1';
-   
+    private myjsonio : Myjsonio;
+    private dynamodbio : Dynamodbio; 
+        
     // 
-    constructor(params: RouteParams, http: Http){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
         this.http = http;
-        this.importFromMyJSON();
+        this.myjsonio  = myjsonio;
+        this.dynamodbio  = dynamodbio;
+        this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
     }
     
-    importFromMyJSON() {  
-      console.log('importFromMyJSON');
-      
-      this.result = { 'json':{}, 'text':'loading...'};
-      this.http
-        .get(this.myJsonUrl)
-        .map(res => res.json())
-        .subscribe(
-          res => this.result  = { 'json':res, 'text':JSON.stringify(res, null, 2)}
-         );
+    onDynamodbImport( myresult : Object, _this) {
+      _this.result = myresult;
     }
     
     

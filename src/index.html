@@ -23,25 +23,8 @@
       console.error.bind(console);
     });
     
-    AWS.config.region = 'eu-west-1';
+   AWS.config.region = 'eu-west-1';
    AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: ''});
-     
-    /*
-    var db = new AWS.DynamoDB();
-db.listTables(function(err, data) {
-  
-  if (err) {
-     console.log(err);
-  }
-  console.log(data.TableNames);
-});*/
-
-/*
-  table.getItem({Key: {id: {S: key}}}, function(err, data) {
-    
-    if ()
-    console.log(data.Item); // print the item data
-  });*/
 
   </script>
   

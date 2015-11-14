@@ -30,30 +30,33 @@ export class Dynamodbio {
             _this);
     });  
   }
-  
-   export( keyname: string, thisresult: Object) {
+   
+   
+    export2( keyname: string, thisresult: Object, titlename: string) {
  
-        var formatted = thisresult['json'];
-        formatted['title'] = 'simvalues';
+        var formatted = {};
+        formatted['title'] = titlename;
         
  
         var newVersionIdArray = [];
-        if ( formatted.hasOwnProperty('version')) {
-          newVersionIdArray = formatted['version'].split('.');
+        if ( thisresult['json'].hasOwnProperty('version')) {
+          newVersionIdArray = thisresult['json']['version'].split('.');
         } else {
           newVersionIdArray = ['0', '0', '0'];
         } 
         newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
         formatted['version'] = newVersionIdArray.join('.'); 
         formatted['lastEditDate'] = (new Date()).toString();
-        
+           
+        formatted['data'] = thisresult['json']['data'];  // merge this.result in to formatted - so that header attributes appear first in the object.
+     
         thisresult['json'] = formatted;
         thisresult['text'] = JSON.stringify(formatted, null, 2);
         
         var headers = new Headers();
         headers.append('Content-Type', 'application/json; charset=utf-8');
 
-        let data: string = JSON.stringify(formatted, null, 2);
+        let data: string = JSON.stringify(thisresult['json'], null, 2);
         
         var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
         var itemParams = {
@@ -72,6 +75,11 @@ export class Dynamodbio {
                  window.alert('DynamoDB has been updated');
             }
         });
+        
+        return thisresult;
    }
    
+   
+
+    
 }

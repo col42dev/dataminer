@@ -15,8 +15,6 @@ import { Unlocks } from './components/unlocks/unlocks';
 import { Unlockprogression } from './components/unlockprogression/unlockprogression';
 import { Craftystate } from './components/craftystate/craftystate';
 import { Grid } from './components/grid/grid';
-import { Myjsonio } from './components/myjsonio/myjsonio';
-
 
 @RouteConfig([
    new Route({path: '/', component: About, as: 'About'}),
@@ -35,14 +33,14 @@ import { Myjsonio } from './components/myjsonio/myjsonio';
   selector: 'dataminer-app',
   providers: [],
   templateUrl: 'app/dataminer.html',
-  directives: [About, Simkvp, Characterstats, Charactercombatmodifiers, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, Craftystate, Myjsonio, ROUTER_DIRECTIVES],
+  directives: [About, Simkvp, Characterstats, Charactercombatmodifiers, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, Craftystate, ROUTER_DIRECTIVES],
   pipes: []
 })
 export class DataminerApp {
 
   router: Router;
   location: Location;
-  version = '0.0.26';
+  version = '0.0.28';
     
   constructor(router: Router, location: Location) {
         this.router = router;

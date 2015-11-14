@@ -3,43 +3,56 @@ import {Http, Headers} from 'angular2/http'
 import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
-
-declare var AWS:any;
+import {Myjsonio} from '../myjsonio/myjsonio';
+import {Dynamodbio} from '../dynamodbio/dynamodbio';
 
 @Component({
   selector: 'recipes',
   templateUrl: 'app/components/recipes/recipes.html',
   styleUrls: ['app/components/recipes/recipes.css'],
-  providers: [],
+  providers: [Myjsonio, Dynamodbio],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
 export class Recipes {
 
-    private result: Object;
+    private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/51viy?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/od3otrm/public/values?alt=json';
-   
+    private myjsonio : Myjsonio;
+    private dynamodbio : Dynamodbio;
+    
     // 
-    constructor(params: RouteParams, http: Http){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
         this.http = http;
-        this.importFromMyJSON();
+        this.myjsonio  = myjsonio;
+        this.dynamodbio  = dynamodbio;
+        this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
     }
     
-    importFromMyJSON() {  
-      console.log('importFromMyJSON');
-      
-      this.result = { 'json':{}, 'text':'loading...'};
+    onDynamodbImport( myresult : Object, _this) {
+      _this.result = myresult;
+    }
+
+    handleImportFromGoogleDocs() {  
+          
       this.http
-        .get(this.myJsonUrl)
+        .get(this.googleDocJsonFeedUrl)
         .map(res => res.json())
         .subscribe(
-          res => this.result  = { 'json':res, 'text':JSON.stringify(res, null, 2)}
+          res => this.result  = this.parseGoogleDocJSON(res)
          );
     }
     
-
+    handleExportToMyJSON() {
+         this.myjsonio.export2(this.myJsonUrl, this.result, 'recipes');
+    }
+    
+    handleExportToDynamoDB() {
+         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'recipes');
+    }
+    
     importFromGoogleDocs() {  
       console.log('importFromGoogleDocs');
           
@@ -51,84 +64,13 @@ export class Recipes {
          );
     }
     
-    exportToMyJSON() {
-        console.log('exportToMyJSON');
-        
-        var formatted = this.result['json'];
-        formatted['title'] = 'recipes';
-        
-
-        var newVersionIdArray = [];
-        if ( formatted.hasOwnProperty('version')) {
-          newVersionIdArray = formatted['version'].split('.');
-        } else {
-          newVersionIdArray = ['0', '0', '0'];
-        } 
-        newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
-        formatted['version'] = newVersionIdArray.join('.'); 
-        formatted['lastEditDate'] = (new Date()).toString();
-        
-        
-        var constructorDefines = {};
-        for ( var cdi = 0; cdi < Object.keys(formatted.craftableDefines).length; cdi ++) {
-
-            var keyname = Object.keys(formatted.craftableDefines)[cdi];
-            var construction = formatted.craftableDefines[keyname].construction[0];
-
-            console.log(construction);
-
-            if ( constructorDefines.hasOwnProperty(construction) === false) {
-                console.log('+');
-                constructorDefines[construction] = {};
-            }
-        }
-        
-        formatted['constructorDefines'] = constructorDefines;
-        
-        
-        this.result['json'] = formatted;
-        this.result['text'] = JSON.stringify(formatted, null, 2);
-        
-        var headers = new Headers();
-        headers.append('Content-Type', 'application/json; charset=utf-8');
-
-        let data: string = JSON.stringify(formatted, null, 2);
-        this.http.put(this.myJsonUrl, data, { headers: headers}) 
-          .map(res => res.json())
-          .subscribe(
-            data => this.onExportToMyJsonSuccess(),
-            err => console.log(err),
-            () => console.log('Complete')
-          ); 
-          
-          
-        //AWS  PUT 
-        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
-        var itemParams = {
-            "TableName":"ptownrules", 
-            "Item": {
-                "ptownrules" : {"S":this.myJsonUrl},
-                "data" : {"S":data}   
-            }
-        };
   
-        table.putItem(itemParams, function(err, data) { 
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(data);
-            }
-        });
-    }
-    
-    onExportToMyJsonSuccess()
-    {
-         window.alert('MyJSON has been updated');
-    }
     
     parseGoogleDocJSON(res) {
       var recipejson = this.result['json'];
-      recipejson['craftableDefines'] = {};
+      
+      recipejson['data'] = {};
+      recipejson['data']['craftableDefines'] = {};
 
 
       for (var i = 0; i < res.feed.entry.length; i++) { 
@@ -193,7 +135,7 @@ export class Recipes {
   
           var recipeid = res.feed.entry[i].gsx$recipeid.$t;
           
-          recipejson['craftableDefines'][recipeid] = recipe;
+          recipejson['data']['craftableDefines'][recipeid] = recipe;
   
           recipe['playerlevelneeded'] = parseInt( res.feed.entry[i].gsx$playerlevelneeded.$t, 10);
           recipe['simMotives'] = [];

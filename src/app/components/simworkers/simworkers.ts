@@ -3,45 +3,39 @@ import {Http, Headers} from 'angular2/http'
 import {RouteParams} from 'angular2/router';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
-
-declare var AWS:any;
+import {Myjsonio} from '../myjsonio/myjsonio';
+import {Dynamodbio} from '../dynamodbio/dynamodbio';
 
 @Component({
   selector: 'simworkers',
   templateUrl: 'app/components/simworkers/simworkers.html',
   styleUrls: ['app/components/simworkers/simworkers.css'],
-  providers: [],
+  providers: [Myjsonio, Dynamodbio],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
 export class Simworkers {
 
-    private result: Object;
+    private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/4xb60?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oxtnpr4/public/values?alt=json';
-   
+    private myjsonio : Myjsonio;
+    private dynamodbio : Dynamodbio;
+    
     // 
-    constructor(params: RouteParams, http: Http){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
         this.http = http;
-        this.importFromMyJSON();
+        this.myjsonio  = myjsonio;
+        this.dynamodbio  = dynamodbio;
+        this.dynamodbio.import(this.myJsonUrl, this.onMyjsonImport, this);
     }
     
-    importFromMyJSON() {  
-      console.log('importFromMyJSON');
-      
-      this.result = { 'json':{}, 'text':'loading...'};
-      this.http
-        .get(this.myJsonUrl)
-        .map(res => res.json())
-        .subscribe(
-          res => this.result  = { 'json':res, 'text':JSON.stringify(res, null, 2)}
-         );
+    onMyjsonImport( myresult : Object, _this) {
+      _this.result = myresult;
     }
     
-    importFromGoogleDocs() {  
-      console.log('importFromGoogleDocs');
-          
+    handleImportFromGoogleDocs() {            
       this.http
         .get(this.googleDocJsonFeedUrl)
         .map(res => res.json())
@@ -50,68 +44,21 @@ export class Simworkers {
          );
     }
     
-    exportToMyJSON() {
-        console.log('exportToMyJSON');
-        
-        var formatted = this.result['json'];
-        formatted['title'] = 'simworkers';
-        
-        var newVersionIdArray = [];
-        if ( formatted.hasOwnProperty('version')) {
-          newVersionIdArray = formatted['version'].split('.');
-        } else {
-          newVersionIdArray = ['0', '0', '0'];
-        } 
-        newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
-        formatted['version'] = newVersionIdArray.join('.'); 
-        formatted['lastEditDate'] = (new Date()).toString();
-        
-        this.result['json'] = formatted;
-        this.result['text'] = JSON.stringify(formatted, null, 2);
-        
-        var headers = new Headers();
-        headers.append('Content-Type', 'application/json; charset=utf-8');
-
-        let data: string = JSON.stringify(formatted, null, 2);
-        this.http.put(this.myJsonUrl, data, { headers: headers}) 
-          .map(res => res.json())
-          .subscribe(
-            data => this.onExportToMyJsonSuccess(),
-            err => console.log(err),
-            () => console.log('Complete')
-          ); 
-          
-          
-        //AWS  PUT 
-        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
-        var itemParams = {
-            "TableName":"ptownrules", 
-            "Item": {
-                "ptownrules" : {"S":this.myJsonUrl},
-                "data" : {"S":data}   
-            }
-        };
-  
-        table.putItem(itemParams, function(err, data) { 
-            if (err) {
-                console.log(err);
-            } else {
-                console.log(data);
-            }
-        });
+    handleExportToMyJSON() {
+         this.myjsonio.export2(this.myJsonUrl, this.result, 'simworkers');
     }
     
-    onExportToMyJsonSuccess()
-    {
-         window.alert('MyJSON has been updated');
+    handleExportToDynamoDB() {
+         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simworkers');
     }
     
     parseGoogleDocJSON(res) {
       
       let simworkers = this.result['json'];
      
-      simworkers['races'] = {};
-      simworkers['professions'] = {};
+      simworkers['data'] = {};
+      simworkers['data']['races'] = {};
+      simworkers['data']['professions'] = {};
 
       console.log( 'length:' + res.feed.entry.length);
 
@@ -154,9 +101,10 @@ export class Simworkers {
         rowdata.levels.push(obj);
       }
  
-      simworkers['races'] = races;
-      simworkers['professions'] = professions;
+      simworkers['data']['races'] = races;
+      simworkers['data']['professions'] = professions;
       
+
       window.alert('Updated. Now update myjson server to persist this change.');
        
       return { 'json':simworkers, 'text':JSON.stringify(simworkers, null, 2)};

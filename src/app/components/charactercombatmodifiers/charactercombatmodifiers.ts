@@ -5,6 +5,8 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
+import {Myjsonio} from '../myjsonio/myjsonio';
+import {Dynamodbio} from '../dynamodbio/dynamodbio';
 
 declare var AWS:any;
 
@@ -12,47 +14,36 @@ declare var AWS:any;
   selector: 'charactercombatmodifiers',
   templateUrl: 'app/components/charactercombatmodifiers/charactercombatmodifiers.html',
   styleUrls: ['app/components/charactercombatmodifiers/charactercombatmodifiers.css'],
-  providers: [],
+  providers: [Myjsonio, Dynamodbio],
   directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
 export class Charactercombatmodifiers {
 
-    private result: Object;
+    private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
     private myJsonUrl: string = 'https://api.myjson.com/bins/22cm6?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oevkvmv/public/values?alt=json';
     private characters;
     private columns: Array<Column>;
+    private myjsonio : Myjsonio;
+    private dynamodbio : Dynamodbio; 
 
     
     // 
-    constructor(params: RouteParams, http: Http){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
         this.http = http;
-        this.result = { 'json':{}, 'text':'loading...'};
-    
-        this.importFromMyJSON();
+        this.myjsonio  = myjsonio;
+        this.dynamodbio  = dynamodbio;
+        this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
     }
     
-    importFromMyJSON() {  
-      console.log('importFromMyJSON');
-      
-      this.result = { 'json':{}, 'text':'loading...'};
-     
-      this.http.get(this.myJsonUrl)  
-        .map(res => res.json())
-        .subscribe(
-          res =>  this.populateResult( res)
-         );
+    onDynamodbImport( myresult : Object, _this) {
+      _this.result = myresult;
     }
     
-    populateResult( res) {
-      this.result = { 'json':res, 'text':JSON.stringify(res, null, 2)};
-      //this.characters = this.getCharacters();
-      //this.columns = this.getColumns();
-    }
-    
-    importFromGoogleDocs() {   
+    handleImportFromGoogleDocs() {  
+          
       this.http
         .get(this.googleDocJsonFeedUrl)
         .map(res => res.json())
@@ -61,6 +52,15 @@ export class Charactercombatmodifiers {
          );
     }
     
+    handleExportToMyJSON() {
+         this.myjsonio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+    }
+    
+    handleExportToDynamoDB() {
+         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+    }
+    
+    /*
     exportToMyJSON() { 
         var formatted = this.result['json'];
         formatted['title'] = 'characterCombatModifiers';
@@ -112,7 +112,7 @@ export class Charactercombatmodifiers {
     onExportToMyJsonSuccess()
     {
          window.alert('MyJSON has been updated');
-    }
+    }*/
     
     parseGoogleDocJSON(res) {
       let  simvalues = this.result['json'];
