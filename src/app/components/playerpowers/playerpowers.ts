@@ -24,7 +24,7 @@ export class Playerpowers {
   private result: Object = { 'json':{}, 'text':'loading...'};
   private http: Http;
   // Next value need changes
-  private myJsonUrl: string = 'https://api.myjson.com/bins/339pe?pretty=1';
+  private myJsonUrl: string = 'https://api.myjson.com/bins/457gd?pretty=1';
   private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o7sqgzj/public/values?alt=json';
   private playerpowers;
   private columns: Array<Column>;
@@ -77,32 +77,30 @@ export class Playerpowers {
       
       let rowKeys = Object.keys(res.feed.entry[rowIndex]);
       rowKeys.forEach(function(thisKey) {
-        if (thisKey.indexOf('gsx$') === 0 && thisKey !== 'gsx$charactertype') {
+        if ((thisKey.indexOf('gsx$') === 0) && (thisKey !== 'gsx$playerpower')) {
             let truncatedKeyName = thisKey.replace('gsx$', '');
 
-            let levelStrippedKeyName = truncatedKeyName.match(/([a-z]+)\d+$/)[1];
-
-            let level = truncatedKeyName.match(/[a-z]+(\d+)$/)[1];
+//            let levelStrippedKeyName = truncatedKeyName.match(/([a-z]+)\d+$/)[1];
+//            let level = truncatedKeyName.match(/[a-z]+(\d+)$/)[1];
       
             let value = res.feed.entry[rowIndex][thisKey].$t;
             
-            if ( !row.hasOwnProperty(levelStrippedKeyName)) {
-              row[levelStrippedKeyName] = {};
+            if ( !row.hasOwnProperty(truncatedKeyName)) {
+              row[truncatedKeyName] = {};
             }
             if (isNaN(value)) {
-              row[levelStrippedKeyName][level] = value;
+              row[truncatedKeyName] = value;
             } else {
-              row[levelStrippedKeyName][level] = parseFloat( value);       
+              row[truncatedKeyName] = parseFloat( value);       
             }
         }
       }.bind(this));
 
-      let characterType = res.feed.entry[rowIndex]['gsx$charactertype'].$t;
-      playerPowersValues['data'] [characterType] = row;    
+      let playerPower = res.feed.entry[rowIndex]['gsx$playerpower'].$t;
+      playerPowersValues['data'][playerPower] = row;    
     }
     
     window.alert('Imported.');
-      
     return { 'json':playerPowersValues, 'text':JSON.stringify(playerPowersValues, null, 2)};
   }
 
