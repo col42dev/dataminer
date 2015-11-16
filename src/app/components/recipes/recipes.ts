@@ -5,12 +5,13 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
+import {Versioning} from '../versioning/versioning';
 
 @Component({
   selector: 'recipes',
   templateUrl: 'app/components/recipes/recipes.html',
   styleUrls: ['app/components/recipes/recipes.css'],
-  providers: [Myjsonio, Dynamodbio],
+  providers: [Myjsonio, Dynamodbio, Versioning],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
@@ -22,13 +23,15 @@ export class Recipes {
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/od3otrm/public/values?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
+    private versioning: Versioning;
     
     // 
-    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio, versioning: Versioning){
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
+        this.versioning = versioning;
     }
     
     onDynamodbImport( myresult : Object, _this) {

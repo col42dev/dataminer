@@ -7,13 +7,13 @@ import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
-
+import {Versioning} from '../versioning/versioning';
 
 @Component({
   selector: 'unlockprogression',
   templateUrl: 'app/components/unlockprogression/unlockprogression.html',
   styleUrls: ['app/components/unlockprogression/unlockprogression.css'],
-  providers: [Myjsonio, Dynamodbio],
+  providers: [Myjsonio, Dynamodbio, Versioning],
   directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
@@ -27,13 +27,15 @@ export class Unlockprogression {
     private categories;
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
+    private versioning: Versioning;
        
     // 
-    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio, versioning: Versioning){
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.dynamodbio.import(this.myJsonUrl, this.onMyjsonImport, this);
+        this.versioning = versioning;
     }
     
     onMyjsonImport( myresult : Object, _this) {
@@ -53,11 +55,25 @@ export class Unlockprogression {
     }
     
     handleExportToMyJSON() {
-         this.myjsonio.export2(this.myJsonUrl, this.result, 'unlockprogression');
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.myjsonio.export2(this.myJsonUrl, this.result, 'unlockprogression');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     handleExportToDynamoDB() {
-         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'unlockprogression');
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'unlockprogression');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     parseGoogleDocJSON(res) {

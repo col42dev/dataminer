@@ -5,12 +5,13 @@ import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {Location} from 'angular2/router';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
+import {Versioning} from '../versioning/versioning';
 
 @Component({
   selector: 'simworkers',
   templateUrl: 'app/components/simworkers/simworkers.html',
   styleUrls: ['app/components/simworkers/simworkers.css'],
-  providers: [Myjsonio, Dynamodbio],
+  providers: [Myjsonio, Dynamodbio, Versioning],
   directives: [ROUTER_DIRECTIVES],
   pipes: []
 })
@@ -22,13 +23,15 @@ export class Simworkers {
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oxtnpr4/public/values?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
+    private versioning: Versioning;
     
     // 
-    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio, versioning: Versioning){
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.dynamodbio.import(this.myJsonUrl, this.onMyjsonImport, this);
+        this.versioning = versioning;
     }
     
     onMyjsonImport( myresult : Object, _this) {
@@ -45,11 +48,25 @@ export class Simworkers {
     }
     
     handleExportToMyJSON() {
-         this.myjsonio.export2(this.myJsonUrl, this.result, 'simworkers');
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.myjsonio.export2(this.myJsonUrl, this.result, 'simworkers');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     handleExportToDynamoDB() {
-         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simworkers');
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simworkers');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     parseGoogleDocJSON(res) {

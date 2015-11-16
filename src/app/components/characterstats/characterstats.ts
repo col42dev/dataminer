@@ -7,15 +7,13 @@ import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
-
-
-declare var AWS:any;
+import {Versioning} from '../versioning/versioning';
 
 @Component({
   selector: 'characterstats',
   templateUrl: 'app/components/characterstats/characterstats.html',
   styleUrls: ['app/components/characterstats/characterstats.css'],
-  providers: [Myjsonio, Dynamodbio],
+  providers: [Myjsonio, Dynamodbio, Versioning],
   directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
@@ -29,14 +27,15 @@ export class Characterstats {
     private columns: Array<Column>;
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio; 
+    private versioning: Versioning;
 
-    
     // 
-    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio, versioning: Versioning){
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
+        this.versioning = versioning;
     }
     
     onDynamodbImport( myresult : Object, _this) {
@@ -55,12 +54,27 @@ export class Characterstats {
          );
     }
     
-    handleExportToMyJSON() {
-         this.myjsonio.export2(this.myJsonUrl, this.result, 'characterStats');
+    handleExportToMyJSON() {       
+         this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.myjsonio.export2(this.myJsonUrl, this.result, 'characterStats');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     handleExportToDynamoDB() {
          this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     
@@ -130,7 +144,7 @@ export class Characterstats {
         
         let rowKeys = Object.keys(this.result['json']['data']);
         rowKeys.forEach( function( thisKey) {
-                thisCharacters.push( thisKey);
+                thisCharacters.push( this.result['json']['data'][thisKey]);
         }.bind( this));
      
         return thisCharacters;

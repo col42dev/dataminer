@@ -7,6 +7,7 @@ import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
+import {Versioning } from '../versioning/versioning';
 
 declare var AWS:any;
 
@@ -14,7 +15,7 @@ declare var AWS:any;
   selector: 'charactercombatmodifiers',
   templateUrl: 'app/components/charactercombatmodifiers/charactercombatmodifiers.html',
   styleUrls: ['app/components/charactercombatmodifiers/charactercombatmodifiers.css'],
-  providers: [Myjsonio, Dynamodbio],
+  providers: [Myjsonio, Dynamodbio, Versioning],
   directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
@@ -28,14 +29,15 @@ export class Charactercombatmodifiers {
     private columns: Array<Column>;
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio; 
-
+    private versioning: Versioning;
     
     // 
-    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
+    constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio, versioning: Versioning){
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
+        this.versioning = versioning;
     }
     
     onDynamodbImport( myresult : Object, _this) {
@@ -52,68 +54,28 @@ export class Charactercombatmodifiers {
          );
     }
     
-    handleExportToMyJSON() {
-         this.myjsonio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+    handleExportToMyJSON() {        
+         this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.myjsonio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     handleExportToDynamoDB() {
-         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
-    }
-    
-    /*
-    exportToMyJSON() { 
-        var formatted = this.result['json'];
-        formatted['title'] = 'characterCombatModifiers';
-        
-        var newVersionIdArray = [];
-        if ( formatted.hasOwnProperty('version')) {
-          newVersionIdArray = formatted['version'].split('.');
-        } else {
-          newVersionIdArray = ['0', '0', '0'];
-        } 
-        newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
-        formatted['version'] = newVersionIdArray.join('.'); 
-        formatted['lastEditDate'] = (new Date()).toString();
-        
-        this.result['json'] = formatted;
-        this.result['text'] = JSON.stringify(formatted, null, 2);
-        
-        var headers = new Headers();
-        headers.append('Content-Type', 'application/json; charset=utf-8');
-
-        let data: string = JSON.stringify(formatted, null, 2);
-        this.http.put(this.myJsonUrl, data, { headers: headers}) 
-          .map(res => res.json())
-          .subscribe(
-            data => this.onExportToMyJsonSuccess(),
-            err => console.log(err),
-            () => console.log('MyJSON server has been updated.')
-          ); 
-          
-        //AWS  PUT 
-        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
-        var itemParams = {
-            "TableName":"ptownrules", 
-            "Item": {
-                "ptownrules" : {"S":this.myJsonUrl},
-                "data" : {"S":data}   
-            }
-        };
-  
-        table.putItem(itemParams, function(err, data) { 
-            if (err) {
-                console.log(err);
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
             } else {
-                console.log(data);
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
-        });
+          }.bind(this)
+        );
     }
-        
-    onExportToMyJsonSuccess()
-    {
-         window.alert('MyJSON has been updated');
-    }*/
-    
+      
     parseGoogleDocJSON(res) {
       let  simvalues = this.result['json'];
       let title = simvalues['title'];

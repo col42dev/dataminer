@@ -16,6 +16,7 @@ import { Unlocks } from './components/unlocks/unlocks';
 import { Unlockprogression } from './components/unlockprogression/unlockprogression';
 import { Craftystate } from './components/craftystate/craftystate';
 import { Grid } from './components/grid/grid';
+import { Versioning } from './components/versioning/versioning';
 
 @RouteConfig([
    new Route({path: '/', component: About, as: 'About'}),
@@ -32,7 +33,7 @@ import { Grid } from './components/grid/grid';
 
 @Component({
   selector: 'dataminer-app',
-  providers: [],
+  providers: [Versioning],
   templateUrl: 'app/dataminer.html',
   directives: [NgIf, About, Simkvp, Characterstats, Charactercombatmodifiers, Mapstate, Simworkers, Recipes, Unlocks, Unlockprogression, Grid, Craftystate, ROUTER_DIRECTIVES],
   pipes: []
@@ -41,46 +42,18 @@ export class DataminerApp {
 
   router: Router;
   location: Location;
-  http: Http;
-  version = '0.0.35';
-  liveVersion = '';
-  hasLatest:number = 0;
-    
-    
+  versioning: Versioning;
 
-    
-  constructor(router: Router, location: Location, http: Http) {
+
+  constructor(router: Router, location: Location, versioning: Versioning) {
         this.router = router;
-        this.location = location;   
-        this.http = http;   
+        this.location = location;  
+        this.versioning = versioning; 
         
-        this.http
-        .get('https://api.myjson.com/bins/1t5wx')
-        .map(res => res.json())
-        .subscribe(
-          res => this.verifyLatestVersion(res)
-         );   
+        this.versioning.verify(null);
     }
 
-    verifyLatestVersion(latestVersion) {
-      
-      this.liveVersion = latestVersion['dataminer']['liveVersion'];
-      
-      var liveVersionIdArray = [];
-      liveVersionIdArray = latestVersion['dataminer']['liveVersion'].split('.');
-      let liveVersionMinorIndex:number = parseInt(liveVersionIdArray[2], 10);
-   
-      var loadedVersionIdArray = [];
-      loadedVersionIdArray = this.version.split('.');
-      let loadedVersionMinorIndex:number = parseInt(loadedVersionIdArray[2], 10);
-   
-      if (loadedVersionMinorIndex >= liveVersionMinorIndex) {
-        this.hasLatest = 1;
-      } else {
-        this.hasLatest = 0;
-      }
-      console.log( liveVersionIdArray[2] + ',' + loadedVersionIdArray[2]);
-    }
+
     
     getLinkStyle(path) {
 
