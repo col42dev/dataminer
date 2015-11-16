@@ -42,7 +42,7 @@ export class DataminerApp {
   router: Router;
   location: Location;
   http: Http;
-  version = '0.0.34';
+  version = '0.0.35';
   liveVersion = '';
   hasLatest:number = 0;
     

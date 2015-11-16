@@ -80,14 +80,22 @@ export class Characterstats {
         
         let rowKeys = Object.keys(res.feed.entry[rowIndex]);
         rowKeys.forEach( function( thisKey) {
-          if (thisKey.indexOf('gsx$') === 0) {
+          if (thisKey.indexOf('gsx$') === 0 && thisKey !== 'gsx$charactertype') {
              let truncatedKeyName = thisKey.replace('gsx$', '');
+
+             let levelStrippedKeyName = truncatedKeyName.match(/([a-z]+)\d+$/)[1];
+
+             let level = truncatedKeyName.match(/[a-z]+(\d+)$/)[1];
+        
              let value = res.feed.entry[rowIndex][thisKey].$t;
               
+             if ( !row.hasOwnProperty(levelStrippedKeyName)) {
+                row[levelStrippedKeyName] = {};
+             }
              if (isNaN(value)) {
-              row[truncatedKeyName] = value; 
+               row[levelStrippedKeyName][level] = value;
              } else {
-              row[truncatedKeyName] = parseFloat( value);        
+               row[levelStrippedKeyName][level] = parseFloat( value);       
              }
          }
         }.bind(this));
@@ -96,7 +104,7 @@ export class Characterstats {
         simvalues['data'] [characterType] = row;    
       }
       
-      window.alert('Updated. Now update myjson server to persist this change.');
+      window.alert('Imported.');
        
       return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2)};
     }
@@ -122,15 +130,7 @@ export class Characterstats {
         
         let rowKeys = Object.keys(this.result['json']['data']);
         rowKeys.forEach( function( thisKey) {
-            switch (thisKey) {
-              case 'title':
-              case 'version':
-              case 'lastEditDate':
-                break;
-              default:
-                thisCharacters.push( this.result['json']['data'][thisKey]);
-                break;
-            }
+                thisCharacters.push( thisKey);
         }.bind( this));
      
         return thisCharacters;
