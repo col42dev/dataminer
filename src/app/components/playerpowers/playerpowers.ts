@@ -53,14 +53,12 @@ export class Playerpowers {
         );
   }
   
-  // This needs to change
   handleExportToMyJSON() {
-        this.myjsonio.export2(this.myJsonUrl, this.result, 'characterStats');
+        this.myjsonio.export2(this.myJsonUrl, this.result, 'playerPowers');
   }
   
-  // This needs to change
   handleExportToDynamoDB() {
-        this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
+        this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'playerPowers');
   }
 
   parseGoogleDocJSON(res) {
