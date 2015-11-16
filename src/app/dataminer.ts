@@ -49,12 +49,9 @@ export class DataminerApp {
         this.router = router;
         this.location = location;  
         this.versioning = versioning; 
-        
         this.versioning.verify(null);
     }
 
-
-    
     getLinkStyle(path) {
 
         if(path === this.location.path()){
