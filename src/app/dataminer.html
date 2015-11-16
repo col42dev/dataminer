@@ -14,25 +14,24 @@
                     <li ><a [router-link]="['/Recipes']" class="link">Recipes</a></li>
                     <li ><a [router-link]="['/Unlocks']" class="link">Progression</a></li>
                     <li ><a [router-link]="['/Unlockprogression']" class="link">ProgressionUnlocks</a></li>
-                     <li ><a [router-link]="['/Craftystate']" class="link">CraftyState</a></li>
+                    <li ><a [router-link]="['/Craftystate']" class="link">CraftyState</a></li>
                  </ul>
             </div>
         </div>
     </nav>
 </div>
 
-
-<div *ng-if="hasLatest==0"> 
-<b> You have an old dataminer version {{version}} loaded, the latest version is {{liveVersion}} </b>
+<div *ng-if="versioning.hasLatest==0"> 
+<b> You have an old dataminer version {{versioning.version}} loaded, the latest version is {{versioning.liveVersion}} </b>
 </div>
 
-<div *ng-if="hasLatest!=0"> 
+<div *ng-if="versioning.hasLatest!=0"> 
 <router-outlet></router-outlet>
 </div>
 
 <div class="footer">
     <div class="container">
-    <p><span class="glyphicon glyphicons-spade"></span>version: {{version}}. <a href="http://www.magicfuelgames.com/">magicfuelgames</a>. <a href="https://github.com/col42dev/dataminer">https://github.com/col42dev/dataminer</a></p>
+    <p><span class="glyphicon glyphicons-spade"></span>version: {{versioning.version}}. <a href="http://www.magicfuelgames.com/">magicfuelgames</a>. <a href="https://github.com/col42dev/dataminer">https://github.com/col42dev/dataminer</a></p>
     </div>
 </div>
  
