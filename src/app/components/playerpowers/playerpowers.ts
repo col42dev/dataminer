@@ -23,7 +23,6 @@ export class Playerpowers {
 
   private result: Object = { 'json':{}, 'text':'loading...'};
   private http: Http;
-  // Next value need changes
   private myJsonUrl: string = 'https://api.myjson.com/bins/457gd?pretty=1';
   private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o7sqgzj/public/values?alt=json';
   private playerpowers;
@@ -85,19 +84,19 @@ export class Playerpowers {
       
             let value = res.feed.entry[rowIndex][thisKey].$t;
             
-            if ( !row.hasOwnProperty(truncatedKeyName)) {
+            if (!row.hasOwnProperty(truncatedKeyName)) {
               row[truncatedKeyName] = {};
             }
             if (isNaN(value)) {
               row[truncatedKeyName] = value;
             } else {
-              row[truncatedKeyName] = parseFloat( value);       
+              row[truncatedKeyName] = parseFloat(value);       
             }
         }
       }.bind(this));
 
       let playerPower = res.feed.entry[rowIndex]['gsx$playerpower'].$t;
-      playerPowersValues['data'][playerPower] = row;    
+      playerPowersValues['data'][playerPower] = row;
     }
     
     window.alert('Imported.');
@@ -113,7 +112,7 @@ export class Playerpowers {
 
       colKeys.forEach( function( thisKey) {
           thisColumns.push( new Column( thisKey, thisKey));
-        }.bind( this));
+       }.bind( this));
     
       return thisColumns;
   }
