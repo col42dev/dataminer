@@ -53,25 +53,29 @@ export class Playerpowers {
         );
   }
   
+  // This needs to change
   handleExportToMyJSON() {
         this.myjsonio.export2(this.myJsonUrl, this.result, 'characterStats');
   }
   
+  // This needs to change
   handleExportToDynamoDB() {
         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
   }
 
   parseGoogleDocJSON(res) {
-    let  simvalues = this.result['json'];
-    let title = simvalues['title'];
-    let version = simvalues['version'];
-    let lastEditDate = simvalues['lastEditDate'];
+    // why simvalues?
+    let playerPowersValues = this.result['json'];
+    let title = playerPowersValues['title'];
+    let version = playerPowersValues['version'];
+    let lastEditDate = playerPowersValues['lastEditDate'];
 
-    simvalues['data'] = {};
-    simvalues['title'] = title;
-    simvalues['version'] = version;
-    simvalues['lastEditDate'] = lastEditDate;
+    playerPowersValues['data'] = {};
+    playerPowersValues['title'] = title;
+    playerPowersValues['version'] = version;
+    playerPowersValues['lastEditDate'] = lastEditDate;
 
+    // What is this doing?
     for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
       var row: Object = {};
       
@@ -98,12 +102,12 @@ export class Playerpowers {
       }.bind(this));
 
       let characterType = res.feed.entry[rowIndex]['gsx$charactertype'].$t;
-      simvalues['data'] [characterType] = row;    
+      playerPowersValues['data'] [characterType] = row;    
     }
     
     window.alert('Imported.');
       
-    return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2)};
+    return { 'json':playerPowersValues, 'text':JSON.stringify(playerPowersValues, null, 2)};
   }
 
   getColumns(): Array<Column> {
@@ -120,14 +124,14 @@ export class Playerpowers {
       return thisColumns;
   }
 
-  getCharacters() {
-      var thisCharacters = [];
+  getPlayerpowers() {
+      var thisPlayerpowers = [];
       
       let rowKeys = Object.keys(this.result['json']['data']);
       rowKeys.forEach( function( thisKey) {
-              thisCharacters.push( thisKey);
+              thisPlayerpowers.push( thisKey);
       }.bind( this));
     
-      return thisCharacters;
+      return thisPlayerpowers;
   }
 }
