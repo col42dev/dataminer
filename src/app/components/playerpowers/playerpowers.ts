@@ -72,12 +72,11 @@ export class Playerpowers {
     playerPowersValues['version'] = version;
     playerPowersValues['lastEditDate'] = lastEditDate;
 
-    // What is this doing?
     for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
       var row: Object = {};
       
       let rowKeys = Object.keys(res.feed.entry[rowIndex]);
-      rowKeys.forEach( function( thisKey) {
+      rowKeys.forEach( function(thisKey) {
         if (thisKey.indexOf('gsx$') === 0 && thisKey !== 'gsx$charactertype') {
             let truncatedKeyName = thisKey.replace('gsx$', '');
 
