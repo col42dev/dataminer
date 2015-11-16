@@ -7,6 +7,7 @@ import { Grid } from '../grid/grid';
 import { Column } from '../grid/column';
 import {Myjsonio} from '../myjsonio/myjsonio';
 import {Dynamodbio} from '../dynamodbio/dynamodbio';
+import {Versioning} from '../versioning/versioning';
 
 declare var AWS:any;
 
@@ -14,7 +15,7 @@ declare var AWS:any;
   selector: 'playerpowers',
   templateUrl: 'app/components/playerpowers/playerpowers.html',
   styleUrls: ['app/components/playerpowers/playerpowers.css'],
-  providers: [Myjsonio, Dynamodbio],
+  providers: [Myjsonio, Dynamodbio, Versioning],
   directives: [ROUTER_DIRECTIVES, Grid],
   pipes: []
 })
@@ -28,13 +29,15 @@ export class Playerpowers {
   private playerpowers;
   private columns: Array<Column>;
   private myjsonio : Myjsonio;
-  private dynamodbio : Dynamodbio; 
+  private dynamodbio : Dynamodbio;
+  private versioning : Versioning;
 
-  constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio){
+  constructor(params: RouteParams, http: Http, myjsonio : Myjsonio, dynamodbio : Dynamodbio, versioning: Versioning){
       this.http = http;
       this.myjsonio  = myjsonio;
       this.dynamodbio  = dynamodbio;
       this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
+      this.versioning = versioning;
   }
   
   onDynamodbImport( myresult : Object, _this) {
