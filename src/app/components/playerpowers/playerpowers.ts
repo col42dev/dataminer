@@ -23,9 +23,9 @@ export class Playerpowers {
 
   private result: Object = { 'json':{}, 'text':'loading...'};
   private http: Http;
-  // Next two values need changes
+  // Next value need changes
   private myJsonUrl: string = 'https://api.myjson.com/bins/339pe?pretty=1';
-  private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/omsznkc/public/values?alt=json';
+  private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o7sqgzj/public/values?alt=json';
   private playerpowers;
   private columns: Array<Column>;
   private myjsonio : Myjsonio;
@@ -62,7 +62,6 @@ export class Playerpowers {
   }
 
   parseGoogleDocJSON(res) {
-    // why simvalues?
     let playerPowersValues = this.result['json'];
     let title = playerPowersValues['title'];
     let version = playerPowersValues['version'];
