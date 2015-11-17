@@ -49,11 +49,25 @@ export class Recipes {
     }
     
     handleExportToMyJSON() {
-         this.myjsonio.export2(this.myJsonUrl, this.result, 'recipes');
+        this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.myjsonio.export2(this.myJsonUrl, this.result, 'recipes');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     handleExportToDynamoDB() {
-         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'recipes');
+         this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'recipes');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
     }
     
     importFromGoogleDocs() {  
@@ -175,7 +189,7 @@ export class Recipes {
   
           // local/global storage
           recipe['localStorage'] = parseInt(res.feed.entry[i].gsx$recipelocalstorage.$t, 10);
-          recipe['globalStorage'] = parseInt(res.feed.entry[i].gsx$recipeglobalstorage.$t, 10);
+          //recipe['globalStorage'] = parseInt(res.feed.entry[i].gsx$recipeglobalstorage1.$t, 10);
         }
       }
              
