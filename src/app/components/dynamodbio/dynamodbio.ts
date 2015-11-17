@@ -1,5 +1,6 @@
 import {Component} from 'angular2/angular2';
 import {Http, Headers} from 'angular2/http'
+import {Myjsonio} from '../myjsonio/myjsonio';
 
 
 declare var AWS:any;
@@ -8,16 +9,18 @@ declare var AWS:any;
   selector: 'dynamodbio',
   templateUrl: 'app/components/dynamodbio/dynamodbio.html',
   styleUrls: ['app/components/dynamodbio/dynamodbio.css'],
-  providers: [],
+  providers: [Myjsonio],
   directives: [],
   pipes: []
 })
 export class Dynamodbio {
 
   private http: Http;
-  
-  constructor(http: Http) {
-        this.http = http;
+  private myjsonio : Myjsonio;
+ 
+  constructor(http: Http, myjsonio: Myjsonio) {
+    this.http = http;
+    this.myjsonio = myjsonio;
   }
   
   import( myjsonurl : string, callback : Function, _this) {
@@ -32,12 +35,11 @@ export class Dynamodbio {
   }
    
    
-    export2( keyname: string, thisresult: Object, titlename: string) {
+  export2( keyname: string, thisresult: Object, titlename: string) {
  
         var formatted = {};
         formatted['title'] = titlename;
         
- 
         var newVersionIdArray = [];
         if ( thisresult['json'].hasOwnProperty('version')) {
           newVersionIdArray = thisresult['json']['version'].split('.');
@@ -73,8 +75,10 @@ export class Dynamodbio {
                 console.log(err);
             } else {
                  window.alert('DynamoDB has been updated');
+                  // export to myjson also.
+                  this.myjsonio.export2(keyname, thisresult, titlename);
             }
-        });
+        }.bind(this));
         
         return thisresult;
    }
