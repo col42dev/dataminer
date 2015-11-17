@@ -56,7 +56,14 @@ export class Playerpowers {
   }
   
   handleExportToMyJSON() {
-        this.myjsonio.export2(this.myJsonUrl, this.result, 'playerPowers');
+         this.versioning.verify( function( verified: number) {
+            if (verified===1) {
+              this.myjsonio.export2(this.myJsonUrl, this.result, 'playerPowers');
+            } else {
+              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
+            }
+          }.bind(this)
+        );
   }
   
   handleExportToDynamoDB() {
