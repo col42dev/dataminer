@@ -90,9 +90,6 @@ export class Playerpowers {
         if ((thisKey.indexOf('gsx$') === 0) && (thisKey !== 'gsx$playerpower')) {
             let truncatedKeyName = thisKey.replace('gsx$', '');
 
-//            let levelStrippedKeyName = truncatedKeyName.match(/([a-z]+)\d+$/)[1];
-//            let level = truncatedKeyName.match(/[a-z]+(\d+)$/)[1];
-      
             let value = res.feed.entry[rowIndex][thisKey].$t;
             
             if (!row.hasOwnProperty(truncatedKeyName)) {
