@@ -12,7 +12,7 @@ import {Http, Headers} from 'angular2/http'
 export class Versioning {
 
   http: Http;
-  version = '0.0.38';
+  version = '0.0.39';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
