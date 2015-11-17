@@ -66,10 +66,9 @@ export class Characterstats {
     }
     
     handleExportToDynamoDB() {
-         this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
