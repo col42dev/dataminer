@@ -79,7 +79,6 @@ export class Playerpowers {
     playerPowersValues['data'] = {};
     playerPowersValues['title'] = title;
     playerPowersValues['version'] = version;
-    playerPowersValues['version'] = '0.0.0.3';
     playerPowersValues['lastEditDate'] = lastEditDate;
 
     for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
