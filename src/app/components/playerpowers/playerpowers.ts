@@ -111,9 +111,9 @@ export class Playerpowers {
 
   getColumns(): Array<Column> {
         var colKeys = [];    
-        let characterCount =  Object.keys( this.result['json']['data']).length;       
-        let firstCharacterKeyName = Object.keys( this.result['json']['data'])[0];
-        let statCount = Object.keys( this.result['json']['data'][firstCharacterKeyName]).length;
+        let playerPowerCount =  Object.keys( this.result['json']['data']).length;       
+        let firstPlayerPowerKeyName = Object.keys( this.result['json']['data'])[0];
+        let statCount = Object.keys( this.result['json']['data'][firstPlayerPowerKeyName]).length;
         
         colKeys.push('0');
         for ( let stat = 1; stat < statCount; stat ++) {
@@ -124,9 +124,9 @@ export class Playerpowers {
 
       colKeys.forEach( function( thisKey) {
             if (thisKey == '0') {
-              thisColumns.push( new Column( thisKey, 'character'));
+              thisColumns.push( new Column( thisKey, 'playerpower'));
             } else {
-              let desc = Object.keys( this.result['json']['data'][firstCharacterKeyName])[thisKey];
+              let desc = Object.keys( this.result['json']['data'][firstPlayerPowerKeyName])[thisKey];
               thisColumns.push( new Column( thisKey, desc));
             }
        }.bind( this));
@@ -143,7 +143,7 @@ export class Playerpowers {
             row.push(thisRowKey);
             let statKeys = Object.keys(this.result['json']['data'][thisRowKey]);
             statKeys.forEach( function( thisStatKey) {
-                let cellvalue = this.result['json']['data'][thisRowKey][thisStatKey]['1']; // + '..' +this.result['json']['data'][thisRowKey][thisStatKey]['50']; 
+                let cellvalue = this.result['json']['data'][thisRowKey][thisStatKey]; // + '..' +this.result['json']['data'][thisRowKey][thisStatKey]['50']; 
                 row = row.concat(cellvalue);
             }.bind(this));
             thisRows.push( row);    
