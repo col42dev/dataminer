@@ -26,7 +26,7 @@ export class Playerpowers {
   private http: Http;
   private myJsonUrl: string = 'https://api.myjson.com/bins/457gd?pretty=1';
   private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o7sqgzj/public/values?alt=json';
-  private playerpowers;
+  private rows;
   private columns: Array<Column>;
   private myjsonio : Myjsonio;
   private dynamodbio : Dynamodbio;
@@ -36,16 +36,15 @@ export class Playerpowers {
       this.http = http;
       this.myjsonio  = myjsonio;
       this.dynamodbio  = dynamodbio;
-      this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
+      this.dynamodbio.import(this.myJsonUrl, 
+        function(myresult : Object) {
+          this.result = myresult;
+          this.columns = this.getColumns();
+          this.rows = this.getRows();
+        }.bind(this), this);
       this.versioning = versioning;
   }
   
-  onDynamodbImport( myresult : Object, _this) {
-    _this.result = myresult;
-    _this.playerpowers = _this.getPlayerpowers();
-    _this.columns = _this.getColumns();
-  }
-
   handleImportFromGoogleDocs() {  
     this.http
       .get(this.googleDocJsonFeedUrl)
@@ -111,27 +110,44 @@ export class Playerpowers {
   }
 
   getColumns(): Array<Column> {
-          
-      var rowKeys = Object.keys(this.result['json']['data']);
-      var colKeys = Object.keys(this.result['json']['data'][rowKeys[3]]); //3 - skip past header fields!
+        var colKeys = [];    
+        let characterCount =  Object.keys( this.result['json']['data']).length;       
+        let firstCharacterKeyName = Object.keys( this.result['json']['data'])[0];
+        let statCount = Object.keys( this.result['json']['data'][firstCharacterKeyName]).length;
+        
+        colKeys.push('0');
+        for ( let stat = 1; stat < statCount; stat ++) {
+          colKeys.push(stat);
+        }
               
       var thisColumns = [];
 
       colKeys.forEach( function( thisKey) {
-          thisColumns.push( new Column( thisKey, thisKey));
+            if (thisKey == '0') {
+              thisColumns.push( new Column( thisKey, 'character'));
+            } else {
+              let desc = Object.keys( this.result['json']['data'][firstCharacterKeyName])[thisKey];
+              thisColumns.push( new Column( thisKey, desc));
+            }
        }.bind( this));
     
       return thisColumns;
   }
 
-  getPlayerpowers() {
-      var thisPlayerpowers = [];
+    getRows() {
+        var thisRows = [];
+        let rowKeys = Object.keys(this.result['json']['data']);
       
-      let rowKeys = Object.keys(this.result['json']['data']);
-      rowKeys.forEach( function( thisKey) {
-              thisPlayerpowers.push( thisKey);
-      }.bind( this));
-    
-      return thisPlayerpowers;
+        rowKeys.forEach( function( thisRowKey) {
+            var row = [];
+            row.push(thisRowKey);
+            let statKeys = Object.keys(this.result['json']['data'][thisRowKey]);
+            statKeys.forEach( function( thisStatKey) {
+                let cellvalue = this.result['json']['data'][thisRowKey][thisStatKey]['1']; // + '..' +this.result['json']['data'][thisRowKey][thisStatKey]['50']; 
+                row = row.concat(cellvalue);
+            }.bind(this));
+            thisRows.push( row);    
+         }.bind( this));
+    return thisRows;
   }
 }
