@@ -8,24 +8,25 @@ import {Http, Headers} from 'angular2/http'
   providers: [],
   directives: [],
   pipes: []
-})
+}) 
 export class Versioning {
+  // Stores dataminer app versioning string on myJSON.
 
   http: Http;
-  version = '0.0.42';
+  version = '0.0.43';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
+  private myJSONVersionURL: string = 'https://api.myjson.com/bins/1t5wx';
   
     constructor( http: Http) {
       this.http = http; 
     }
     
     verify( verifiedCallback: Function) {
-      
       this.verifiedCallback = verifiedCallback;
       this.http
-        .get('https://api.myjson.com/bins/1t5wx')
+        .get(this.myJSONVersionURL)
         .map(res => res.json())
         .subscribe(
           res => this.verifyLatestVersion(res)
@@ -36,25 +37,18 @@ export class Versioning {
       
       this.liveVersion = latestVersion['dataminer']['liveVersion'];
       
-      var liveVersionIdArray = [];
-      liveVersionIdArray = latestVersion['dataminer']['liveVersion'].split('.');
+      let liveVersionIdArray = latestVersion['dataminer']['liveVersion'].split('.');
       let liveVersionMinorIndex:number = parseInt(liveVersionIdArray[2], 10);
    
-      var loadedVersionIdArray = [];
-      loadedVersionIdArray = this.version.split('.');
+      let loadedVersionIdArray = this.version.split('.');
       let loadedVersionMinorIndex:number = parseInt(loadedVersionIdArray[2], 10);
    
-      if (loadedVersionMinorIndex >= liveVersionMinorIndex) {
-        this.hasLatest = 1;
-      } else {
-        this.hasLatest = 0;
-      }
-      console.log( liveVersionIdArray[2] + ',' + loadedVersionIdArray[2]);
+      this.hasLatest = (loadedVersionMinorIndex >= liveVersionMinorIndex) ? 1 : 0;
+      //console.log( liveVersionIdArray[2] + ',' + loadedVersionIdArray[2]);
       
       if (this.verifiedCallback) {
         this.verifiedCallback(this.hasLatest);
       }
-
     }
 
 }

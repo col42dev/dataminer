@@ -57,7 +57,7 @@ export class Myjsonio {
 
         let data: string = JSON.stringify(thisresult['json'], null, 2);
         
-             this.http.put(myJsonUrl, data, { headers: headers}) 
+        this.http.put(myJsonUrl, (new Date()).toString(), { headers: headers}) 
           .map(res => res.json())
           .subscribe(
             data => this.onExportToMyJsonSuccess(),

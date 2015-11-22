@@ -17,6 +17,7 @@ export class Dynamodbio {
 
   private http: Http;
   private myjsonio : Myjsonio;
+  private lastExportDateMyJSONURL:string= 'https://api.myjson.com/bins/3ywwt?pretty=1';
  
   constructor(http: Http, myjsonio: Myjsonio) {
     this.http = http;
@@ -24,7 +25,6 @@ export class Dynamodbio {
   }
   
   import( myjsonurl : string, callback : Function, _this) {
-    
     var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});  
     table.getItem({Key: {ptownrules: {S: myjsonurl}}}, function(err, data) {
       callback({ 
@@ -37,10 +37,8 @@ export class Dynamodbio {
    
   export2( keyname: string, thisresult: Object, titlename: string) {
  
-        var formatted = {};
-        formatted['title'] = titlename;
-        
-        var newVersionIdArray = [];
+        let formatted = {'title' : titlename};
+        let newVersionIdArray = [];
         if ( thisresult['json'].hasOwnProperty('version')) {
           newVersionIdArray = thisresult['json']['version'].split('.');
         } else {
@@ -49,19 +47,13 @@ export class Dynamodbio {
         newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
         formatted['version'] = newVersionIdArray.join('.'); 
         formatted['lastEditDate'] = (new Date()).toString();
-           
         formatted['data'] = thisresult['json']['data'];  // merge this.result in to formatted - so that header attributes appear first in the object.
-     
         thisresult['json'] = formatted;
         thisresult['text'] = JSON.stringify(formatted, null, 2);
         
-        var headers = new Headers();
-        headers.append('Content-Type', 'application/json; charset=utf-8');
-
         let data: string = JSON.stringify(thisresult['json'], null, 2);
-        
-        var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
-        var itemParams = {
+        let table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
+        let itemParams = {
             "TableName":"ptownrules", 
             "Item": {
                 "ptownrules" : {"S":keyname},
@@ -75,15 +67,27 @@ export class Dynamodbio {
                 console.log(err);
             } else {
                  window.alert('DynamoDB has been updated');
-                  // export to myjson also.
-                  this.myjsonio.export2(keyname, thisresult, titlename);
+                 this.updateLastDynamoDBExportDate();
+                 this.myjsonio.export2(keyname, thisresult, titlename);
             }
         }.bind(this));
         
         return thisresult;
    }
    
+   updateLastDynamoDBExportDate() {
+        // update last export date to MyJSON
+        let myJSONheaders = new Headers();
+        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+        
+        let data: string = JSON.stringify({ 'lastDynamoDBExportDate' : (new Date()).toString()}, null, 2);
+        this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders}) 
+          .map(res => res.json())
+          .subscribe(
+            err => console.log(err),
+            () => console.log('last export date exported')
+          ); 
+   }
    
 
-    
 }

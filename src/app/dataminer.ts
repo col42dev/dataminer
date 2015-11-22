@@ -46,7 +46,6 @@ export class DataminerApp {
   location: Location;
   versioning: Versioning;
 
-
   constructor(router: Router, location: Location, versioning: Versioning) {
         this.router = router;
         this.location = location;  
