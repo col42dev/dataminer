@@ -84,7 +84,7 @@ export class Dynamodbio {
         this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders}) 
           .map(res => res.json())
           .subscribe(
-            err => console.log(err),
+            err => window.alert('updateLastDynamoDBExportDate:' + err),
             () => console.log('last export date exported')
           ); 
    }

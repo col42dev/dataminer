@@ -56,12 +56,13 @@ export class Myjsonio {
         headers.append('Content-Type', 'application/json; charset=utf-8');
 
         let data: string = JSON.stringify(thisresult['json'], null, 2);
+        console.log(data);
         
-        this.http.put(myJsonUrl, (new Date()).toString(), { headers: headers}) 
+        this.http.put(myJsonUrl, data, { headers: headers}) 
           .map(res => res.json())
           .subscribe(
             data => this.onExportToMyJsonSuccess(),
-            err => console.log(err),
+            err => window.alert(err),
             () => console.log('MyJSON Export Complete')
           ); 
 

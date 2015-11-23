@@ -13,7 +13,7 @@ export class Versioning {
   // Stores dataminer app versioning string on myJSON.
 
   http: Http;
-  version = '0.0.43';
+  version = '0.0.44';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
