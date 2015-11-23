@@ -65,6 +65,7 @@ export class Dynamodbio {
           console.log('putItem');
             if (err) {
                 console.log(err);
+                window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
             } else {
                  window.alert('DynamoDB has been updated');
                  this.updateLastDynamoDBExportDate();
@@ -84,8 +85,9 @@ export class Dynamodbio {
         this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders}) 
           .map(res => res.json())
           .subscribe(
-            err => window.alert('updateLastDynamoDBExportDate:' + err),
-            () => console.log('last export date exported')
+            data => console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)),
+            err => window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
+            () => console.log('MyJSON last export date export complete')
           ); 
    }
    
