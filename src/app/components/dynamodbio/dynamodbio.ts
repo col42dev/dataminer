@@ -24,13 +24,12 @@ export class Dynamodbio {
     this.myjsonio = myjsonio;
   }
   
-  import( myjsonurl : string, callback : Function, _this) {
+  import( myjsonurl : string, callback : Function) {
     var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});  
     table.getItem({Key: {ptownrules: {S: myjsonurl}}}, function(err, data) {
       callback({ 
             'json':JSON.parse(data.Item.data.S ),
-            'text':data.Item.data.S},
-            _this);
+            'text':data.Item.data.S});
     });  
   }
    

@@ -34,15 +34,15 @@ export class Unlockprogression {
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
-        this.dynamodbio.import(this.myJsonUrl, this.onMyjsonImport, this);
         this.versioning = versioning;
+        this.dynamodbio.import(this.myJsonUrl, 
+          function(myresult : Object) {
+            this.result = myresult;
+            this.columns = this.getColumns();
+            this.categories = this.getCategories();
+          }.bind(this));
     }
-    
-    onMyjsonImport( myresult : Object, _this) {
-      _this.result = myresult;
-      _this.columns = _this.getColumns();
-      _this.categories = _this.getCategories();
-    }
+
     
     handleImportFromGoogleDocs() {  
           

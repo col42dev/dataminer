@@ -29,12 +29,11 @@ export class Unlocks {
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
-        this.dynamodbio.import(this.myJsonUrl, this.onDynamodbImport, this);
         this.versioning = versioning;
-    }
-
-    onDynamodbImport( myresult : Object, _this) {
-      _this.result = myresult;
+        this.dynamodbio.import(this.myJsonUrl, 
+          function(myresult : Object) {
+            this.result = myresult;
+          }.bind(this));
     }
     
     handleImportFromGoogleDocs() {    

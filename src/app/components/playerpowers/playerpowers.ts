@@ -36,13 +36,14 @@ export class Playerpowers {
       this.http = http;
       this.myjsonio  = myjsonio;
       this.dynamodbio  = dynamodbio;
+      this.versioning = versioning;
       this.dynamodbio.import(this.myJsonUrl, 
         function(myresult : Object) {
           this.result = myresult;
           this.columns = this.getColumns();
           this.rows = this.getRows();
-        }.bind(this), this);
-      this.versioning = versioning;
+        }.bind(this));
+      
   }
   
   handleImportFromGoogleDocs() {  
