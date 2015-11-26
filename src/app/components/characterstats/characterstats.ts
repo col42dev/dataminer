@@ -41,7 +41,6 @@ export class Characterstats {
             this.columns = this.getColumns();
             this.rows = this.getRows();
           }.bind(this));
-
     }
     
 

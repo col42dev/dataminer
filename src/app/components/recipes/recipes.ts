@@ -189,6 +189,11 @@ export class Recipes {
           // local/global storage
           recipe['localStorage'] = parseInt(res.feed.entry[i].gsx$recipelocalstorage.$t, 10);
           //recipe['globalStorage'] = parseInt(res.feed.entry[i].gsx$recipeglobalstorage1.$t, 10);
+          
+          if (res.feed.entry[i].hasOwnProperty('gsx$outputautomaticupgrade') && res.feed.entry[i].gsx$outputautomaticupgrade.$t.length > 0) {
+            recipe['automaticupgrade'] = (res.feed.entry[i].gsx$outputautomaticupgrade.$t === 'TRUE') ? 1 : 0;
+          } 
+       
         }
       }
              
