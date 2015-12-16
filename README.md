@@ -5,29 +5,21 @@
 
 Update [NodeJS to version 4+](https://nodejs.org/en/download/)
 
-Install Angular 2 cli
-> $npm install -g angular-cli
+The project uses TypeScript, so to get started you may have to run the following:
 
-Create app
-> $ng new dataminer
+1-Install the TypeScript compiler: npm install -g typescript@^1.7.0
 
-Serve on local host 
-> $ng serve
+2-Run npm install and bower install
 
-Add component
-> $ng generate component simKVP
+Steps 1-2 takes care of installing required tooling.
 
+The final step is to start the TypeScript compiler to transpile your TypeScript code to JavaScript.
 
-## testing
+Use the following command to start watching your files:
 
-> $ng test
+>$ tsc --watch -m commonjs -t es5 --emitDecoratorMetadata --experimentalDecorators --jsx react dataminer-app.ts
 
-## build and deploy
-
-to generate dist folder
-> $ng build
-
-to deploy:
+To deploy:
 >$ sh publishToEC2.sh
 
 ## references:
