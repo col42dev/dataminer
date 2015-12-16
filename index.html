@@ -1,0 +1,64 @@
+<html>
+<head>
+    <title>Dataminer</title>
+
+    <script src="node_modules/es6-promise/dist/es6-promise.min.js"></script>
+    <script src="node_modules/es6-shim/es6-shim.js"></script>
+
+    <script src="node_modules/zone.js/dist/zone.min.js"></script>
+
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+
+    <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="bower_components/react/react.js"></script>
+    
+ 
+   <script src="lib/custom-require.js"></script>
+
+
+   <script>
+        var __React = React;
+        var Dispatcher = require('./node_modules/flux/dist/Flux').Dispatcher;
+        var EventEmitter = require('./node_modules/events/events').EventEmitter;
+    </script>
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/systemjs/0.18.4/system.src.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.2.16.min.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/rxjs/bundles/Rx.js"></script>
+
+    <script>
+        System.config({
+            defaultJSExtensions: true,
+            paths: {
+                'rxjs/observable/*' : './node_modules/rxjs/add/observable/*.js',
+                'rxjs/operator/*' : './node_modules/rxjs/add/operator/*.js',
+                'rxjs/*' : './node_modules/rxjs/*.js'
+            }
+        });
+    </script>
+
+    <script src="https://code.angularjs.org/2.0.0-beta.0/angular2.js"></script>
+    <script src="https://code.angularjs.org/2.0.0-beta.0/http.dev.js"></script>
+    <script src="https://code.angularjs.org/2.0.0-beta.0/router.dev.js"></script>
+
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="site.css?v=1" rel="stylesheet">
+
+</head>
+<body>
+
+<dataminer-app></dataminer-app>
+
+<script>System.import('./dataminer-app');
+
+AWS.config.region = 'eu-west-1';
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'eu-west-1:c2876904-2d5d-4448-9e5a-3bd3acd88ccf'});
+</script>
+
+   
+</body>
+
+</html>

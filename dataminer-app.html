@@ -1,0 +1,27 @@
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div>
+                <ul class="nav navbar-nav">
+                    <li [class.active]="getLinkStyle('')"><a [routerLink]="['/About']" class="link">About</a></li>
+                    <li [class.active]="getLinkStyle('/exporter')"><a [routerLink]="['/Exporter/Simkvp']" class="link">Exporters</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+<div *ngIf="versioning.hasLatest==0"> 
+    <b> You have an old dataminer version {{versioning.version}} loaded, the latest version is {{versioning.liveVersion}} </b>
+</div>
+
+<div class="col-md-9" *ngIf="versioning.hasLatest!=0"> 
+    <router-outlet></router-outlet>
+</div>
+
+
+<div class="footer">
+    <div class="container">
+    <p><span class="glyphicon glyphicons-spade"></span>version: {{versioning.version}}. <a href="http://www.magicfuelgames.com/">magicfuelgames</a>. <a href="https://github.com/col42dev/dataminer">https://github.com/col42dev/dataminer</a></p>
+    </div>
+</div>
