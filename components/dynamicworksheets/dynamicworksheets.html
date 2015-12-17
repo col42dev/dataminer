@@ -1,0 +1,31 @@
+<h4><a href="">Dynamic Worksheets</a></h4>
+
+
+
+
+
+
+<pre>
+version: {{result['json']['version']}}
+last edit date: {{result['json']['lastEditDate']}}
+</pre>
+
+<pre>
+<button (click)="handleImportDynamicWorksheets()"><span></span>Populate Dynamic WorkSheets List</button>
+
+<table class="table table-striped">
+    <tbody>
+        <tr *ngFor="#row of dynamicWorksheetNames">
+            <td>{{row}}</td>
+            <td><button (click)="handleImportFromGoogleDocs(row)"><span class="glyphicon glyphicon-import"></span>Import from google document</button>
+</td>
+            <td><button ><span class="glyphicon glyphicon-import"></span>Export to AWS DynamoDB</button>
+</td>
+        </tr>
+    </tbody>
+</table>
+</pre>
+
+
+<textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>
+

@@ -13,6 +13,7 @@ import { Unlockprogression } from './components/unlockprogression/unlockprogress
 import { Craftystate } from './components/craftystate/craftystate';
 import { Playerpowers } from './components/playerpowers/playerpowers';
 import { Grid } from './components/grid/grid';
+import { Dynamicworksheets } from './components/dynamicworksheets/dynamicworksheets';
 
 import {ROUTER_DIRECTIVES, RouteConfig, Route} from 'angular2/router';
 
@@ -41,6 +42,8 @@ import {
    new Route({path: '/charactercombatmodifiers', component: Charactercombatmodifiers, name: 'Charactercombatmodifiers'}),
    new Route({path: '/craftystate', component: Craftystate, name: 'Craftystate'}),
    new Route({path: '/playerpowers', component: Playerpowers, name: 'Playerpowers'}),
+   new Route({path: '/dynamicworksheets', component: Dynamicworksheets, name: 'Dynamicworksheets'}),
+ 
  
 ])
 
