@@ -46,7 +46,7 @@ export class Dynamicworksheets {
     }
 
     handleImportDynamicWorksheets() {
-          console.log('importFromGoogleDocs');
+          console.log('handleImportDynamicWorksheets');
             
           this.http
             .get(this.googleDocJsonFeedUrl)
@@ -66,6 +66,9 @@ export class Dynamicworksheets {
           }
         });
         
+      this.dynamicWorksheetNames = [worksheetName];
+  
+        
       var url = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/'+ worksheetKey + '/public/values?alt=json';
 
       console.log(url);
@@ -73,30 +76,32 @@ export class Dynamicworksheets {
         .get(url)
         .map(res => res.json())
         .subscribe(
-          res => this.result  = this.parseGoogleDocJSON(res)
+          res => this.result = this.parseGoogleDocJSON(res, worksheetKey)
          );
+         
+         
     }
     
     
-   populateDynamicWorksheetsList(res) {
+   populateDynamicWorksheetsList( googleWorksheetJSON) {
 
       this.dynamicWorksheetNames = [];
       this.dynamicWorksheets = [];
    
-      for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) { 
+      for (var rowIndex = 0; rowIndex < googleWorksheetJSON.feed.entry.length; rowIndex++) { 
 
         var dynamic = {};
-        if (res.feed.entry[rowIndex]['title']['$t'].match(/^\_/)) {
-          dynamic['title'] = res.feed.entry[rowIndex]['title'];
-          dynamic['content'] = res.feed.entry[rowIndex]['content'];
+        if (googleWorksheetJSON.feed.entry[rowIndex]['title']['$t'].match(/^\_/)) {
+          dynamic['title'] = googleWorksheetJSON.feed.entry[rowIndex]['title'];
+          dynamic['content'] = googleWorksheetJSON.feed.entry[rowIndex]['content'];
           
           var re = new RegExp( "https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/(.*)/public/basic");
-          var match =  re.exec(res.feed.entry[rowIndex]['link'][0]['href']);
+          var match =  re.exec(googleWorksheetJSON.feed.entry[rowIndex]['link'][0]['href']);
           if (match) {
               dynamic['key'] = match[1];
           }
           
-          this.dynamicWorksheetNames.push( res.feed.entry[rowIndex]['title']['$t']);
+          this.dynamicWorksheetNames.push( googleWorksheetJSON.feed.entry[rowIndex]['title']['$t']);
           
           this.dynamicWorksheets.push(dynamic);
         }
@@ -129,20 +134,37 @@ export class Dynamicworksheets {
     
     
     handleExportToDynamoDB() {    
-      /*   
+
+         console.log(this.result['worksheetKey'] + ', ' + this.result['title']);
+    
          this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simvalues');
+    
+              this.result = this.dynamodbio.export(this.result['worksheetKey'], this.result, this.result['title']);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
           }.bind(this)
-        );*/
+        );
     }
     
-    parseGoogleDocJSON(res) {
+    parseGoogleDocJSON(res, worksheetKey) {
+      
+      //let  simvalues = this.result['json'];
+      //let title = simvalues['title'];
+      //let version = simvalues['version'];
+      //let lastEditDate = simvalues['lastEditDate'];
+      
+      
       var simvalues = this.result['json'];
       simvalues['data'] = {};
+      
+      //simvalues['title'] = res.feed.entry[row]['title']['$t'];
+      //simvalues['version'] = version;
+      //simvalues['lastEditDate'] = lastEditDate;
+
+   
+   
       simvalues['data']['rows'] = [];
       simvalues['data']['keys'] = {};
 
@@ -156,14 +178,11 @@ export class Dynamicworksheets {
          thisRow[key] = {};
                
          for ( var col in res.feed.entry[0] ) {
-     
       
             var value = res.feed.entry[row]['title']['$t'];
             if (!isNaN(value)) {
                 value = parseInt( value, 10);
             }
-            
-            // console.log(JSON.stringify(value));
             
             Object.keys(value).forEach( function( subvalue) {
               if (col.match(/^gsx/)) {
@@ -182,7 +201,7 @@ export class Dynamicworksheets {
       
       window.alert('Import complete. Now export to persist this change.');
        
-      return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2)};
+      return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2), 'title': res.feed['title']['$t'], 'worksheetKey': worksheetKey};
     }
 
 }

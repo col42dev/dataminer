@@ -67,7 +67,7 @@ export class Playerpowers {
   }
   
   handleExportToDynamoDB() {
-        this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'playerPowers');
+        this.result = this.dynamodbio.export('o7sqgzj', this.result, 'playerPowers');
   }
 
   parseGoogleDocJSON(res) {

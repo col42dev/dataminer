@@ -24,7 +24,7 @@ var Mapstate = (function () {
         this.myjsonio = myjsonio;
         this.dynamodbio = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import(this.myJsonUrl, function (myresult) {
+        this.dynamodbio.import('o5onybx', function (myresult) {
             this.result = myresult;
         }.bind(this));
     }
@@ -48,7 +48,7 @@ var Mapstate = (function () {
     Mapstate.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'mapstate');
+                this.result = this.dynamodbio.export('o5onybx', this.result, 'mapstate');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

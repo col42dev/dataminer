@@ -31,7 +31,7 @@ export class Mapstate {
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import(this.myJsonUrl, 
+        this.dynamodbio.import('o5onybx', 
           function(myresult : Object) {
             this.result = myresult;
           }.bind(this));
@@ -61,7 +61,7 @@ export class Mapstate {
     handleExportToDynamoDB() {
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'mapstate');
+              this.result = this.dynamodbio.export('o5onybx', this.result, 'mapstate');
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

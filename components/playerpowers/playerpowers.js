@@ -49,7 +49,7 @@ var Playerpowers = (function () {
         }.bind(this));
     };
     Playerpowers.prototype.handleExportToDynamoDB = function () {
-        this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'playerPowers');
+        this.result = this.dynamodbio.export('o7sqgzj', this.result, 'playerPowers');
     };
     Playerpowers.prototype.parseGoogleDocJSON = function (res) {
         var playerPowersValues = this.result['json'];

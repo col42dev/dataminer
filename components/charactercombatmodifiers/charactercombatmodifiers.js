@@ -26,7 +26,7 @@ var Charactercombatmodifiers = (function () {
         this.myjsonio = myjsonio;
         this.dynamodbio = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import(this.myJsonUrl, function (myresult) {
+        this.dynamodbio.import('oevkvmv', function (myresult) {
             this.result = myresult;
         }.bind(this));
     }
@@ -50,7 +50,7 @@ var Charactercombatmodifiers = (function () {
     Charactercombatmodifiers.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+                this.result = this.dynamodbio.export("oevkvmv", this.result, 'characterCombatModifiers');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

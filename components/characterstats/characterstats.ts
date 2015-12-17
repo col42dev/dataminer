@@ -35,7 +35,7 @@ export class Characterstats {
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import(this.myJsonUrl, 
+        this.dynamodbio.import('omsznkc', 
           function(myresult : Object) {
             this.result = myresult;
             this.columns = this.getColumns();
@@ -67,7 +67,7 @@ export class Characterstats {
     handleExportToDynamoDB() {
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
+              this.result = this.dynamodbio.export("omsznkc", this.result, 'characterStats');
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

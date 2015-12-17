@@ -52,7 +52,7 @@ var Unlockprogression = (function () {
     Unlockprogression.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'unlockprogression');
+                this.result = this.dynamodbio.export('oz4n58j', this.result, 'unlockprogression');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

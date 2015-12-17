@@ -37,7 +37,7 @@ export class Charactercombatmodifiers {
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import(this.myJsonUrl,     
+        this.dynamodbio.import('oevkvmv',     
           function( myresult : Object) {
             this.result = myresult;
           }.bind(this));
@@ -68,7 +68,7 @@ export class Charactercombatmodifiers {
     handleExportToDynamoDB() {
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
+              this.result = this.dynamodbio.export("oevkvmv", this.result, 'characterCombatModifiers');
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

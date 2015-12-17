@@ -65,7 +65,7 @@ export class Simkvp {
     handleExportToDynamoDB() {       
          this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simvalues');
+              this.result = this.dynamodbio.export('otw4nb', this.result, 'simvalues');
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

@@ -48,7 +48,7 @@ var Simworkers = (function () {
     Simworkers.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simworkers');
+                this.result = this.dynamodbio.export('oxtnpr4', this.result, 'simworkers');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

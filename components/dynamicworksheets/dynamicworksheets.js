@@ -36,7 +36,7 @@ var Dynamicworksheets = (function () {
     }
     Dynamicworksheets.prototype.handleImportDynamicWorksheets = function () {
         var _this = this;
-        console.log('importFromGoogleDocs');
+        console.log('handleImportDynamicWorksheets');
         this.http
             .get(this.googleDocJsonFeedUrl)
             .map(function (res) { return res.json(); })
@@ -51,27 +51,28 @@ var Dynamicworksheets = (function () {
                 worksheetKey = worksheet['key'];
             }
         });
+        this.dynamicWorksheetNames = [worksheetName];
         var url = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/' + worksheetKey + '/public/values?alt=json';
         console.log(url);
         this.http
             .get(url)
             .map(function (res) { return res.json(); })
-            .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
+            .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res, worksheetKey); });
     };
-    Dynamicworksheets.prototype.populateDynamicWorksheetsList = function (res) {
+    Dynamicworksheets.prototype.populateDynamicWorksheetsList = function (googleWorksheetJSON) {
         this.dynamicWorksheetNames = [];
         this.dynamicWorksheets = [];
-        for (var rowIndex = 0; rowIndex < res.feed.entry.length; rowIndex++) {
+        for (var rowIndex = 0; rowIndex < googleWorksheetJSON.feed.entry.length; rowIndex++) {
             var dynamic = {};
-            if (res.feed.entry[rowIndex]['title']['$t'].match(/^\_/)) {
-                dynamic['title'] = res.feed.entry[rowIndex]['title'];
-                dynamic['content'] = res.feed.entry[rowIndex]['content'];
+            if (googleWorksheetJSON.feed.entry[rowIndex]['title']['$t'].match(/^\_/)) {
+                dynamic['title'] = googleWorksheetJSON.feed.entry[rowIndex]['title'];
+                dynamic['content'] = googleWorksheetJSON.feed.entry[rowIndex]['content'];
                 var re = new RegExp("https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/(.*)/public/basic");
-                var match = re.exec(res.feed.entry[rowIndex]['link'][0]['href']);
+                var match = re.exec(googleWorksheetJSON.feed.entry[rowIndex]['link'][0]['href']);
                 if (match) {
                     dynamic['key'] = match[1];
                 }
-                this.dynamicWorksheetNames.push(res.feed.entry[rowIndex]['title']['$t']);
+                this.dynamicWorksheetNames.push(googleWorksheetJSON.feed.entry[rowIndex]['title']['$t']);
                 this.dynamicWorksheets.push(dynamic);
             }
         }
@@ -90,19 +91,26 @@ var Dynamicworksheets = (function () {
           );*/
     };
     Dynamicworksheets.prototype.handleExportToDynamoDB = function () {
-        /*
-           this.versioning.verify( function( verified: number) {
-              if (verified===1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'simvalues');
-              } else {
+        console.log(this.result['worksheetKey'] + ', ' + this.result['title']);
+        this.versioning.verify(function (verified) {
+            if (verified === 1) {
+                this.result = this.dynamodbio.export(this.result['worksheetKey'], this.result, this.result['title']);
+            }
+            else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-              }
-            }.bind(this)
-          );*/
+            }
+        }.bind(this));
     };
-    Dynamicworksheets.prototype.parseGoogleDocJSON = function (res) {
+    Dynamicworksheets.prototype.parseGoogleDocJSON = function (res, worksheetKey) {
+        //let  simvalues = this.result['json'];
+        //let title = simvalues['title'];
+        //let version = simvalues['version'];
+        //let lastEditDate = simvalues['lastEditDate'];
         var simvalues = this.result['json'];
         simvalues['data'] = {};
+        //simvalues['title'] = res.feed.entry[row]['title']['$t'];
+        //simvalues['version'] = version;
+        //simvalues['lastEditDate'] = lastEditDate;
         simvalues['data']['rows'] = [];
         simvalues['data']['keys'] = {};
         var rowIndex = 0;
@@ -116,7 +124,6 @@ var Dynamicworksheets = (function () {
                 if (!isNaN(value)) {
                     value = parseInt(value, 10);
                 }
-                // console.log(JSON.stringify(value));
                 Object.keys(value).forEach(function (subvalue) {
                     if (col.match(/^gsx/)) {
                         console.log(JSON.stringify(res.feed.entry[rowIndex][col]['$t']));
@@ -130,7 +137,7 @@ var Dynamicworksheets = (function () {
             rowIndex++;
         }
         window.alert('Import complete. Now export to persist this change.');
-        return { 'json': simvalues, 'text': JSON.stringify(simvalues, null, 2) };
+        return { 'json': simvalues, 'text': JSON.stringify(simvalues, null, 2), 'title': res.feed['title']['$t'], 'worksheetKey': worksheetKey };
     };
     Dynamicworksheets = __decorate([
         core_1.Component({

@@ -26,7 +26,7 @@ var Characterstats = (function () {
         this.myjsonio = myjsonio;
         this.dynamodbio = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import(this.myJsonUrl, function (myresult) {
+        this.dynamodbio.import('omsznkc', function (myresult) {
             this.result = myresult;
             this.columns = this.getColumns();
             this.rows = this.getRows();
@@ -52,7 +52,7 @@ var Characterstats = (function () {
     Characterstats.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'characterStats');
+                this.result = this.dynamodbio.export("omsznkc", this.result, 'characterStats');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

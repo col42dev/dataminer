@@ -48,7 +48,7 @@ var Recipes = (function () {
     Recipes.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'recipes');
+                this.result = this.dynamodbio.export('od3otrm', this.result, 'recipes');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

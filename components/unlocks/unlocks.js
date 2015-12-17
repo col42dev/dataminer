@@ -47,7 +47,7 @@ var Unlocks = (function () {
     Unlocks.prototype.handleExportToDynamoDB = function () {
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export2(this.myJsonUrl, this.result, 'progression');
+                this.result = this.dynamodbio.export('os7bs54', this.result, 'progression');
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
