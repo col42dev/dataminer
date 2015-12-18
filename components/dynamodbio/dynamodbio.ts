@@ -34,6 +34,20 @@ export class Dynamodbio {
     });  
   }
    
+  updateLastDynamoDBExportDate() {
+        // update last export date to MyJSON
+        let myJSONheaders = new Headers();
+        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+        
+        let data: string = JSON.stringify({ 'lastDynamoDBExportDate' : (new Date()).toString()}, null, 2);
+        this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders}) 
+          .map(res => res.json())
+          .subscribe(
+            data => console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)),
+            err => window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
+            () => console.log('MyJSON last export date export complete')
+          ); 
+  }
    
   export( keyname: string, thisresult: Object, titlename: string, tableNames:string[] = ['ptownrules', 'ptownrulestest01']) {
  
@@ -77,67 +91,13 @@ export class Dynamodbio {
               }
           }.bind(this));
                 
-        });
-        
-        return thisresult;
-   }
-   
-   
-  export2( keyname: string, thisresult: Object, titlename: string) {
- 
-        let formatted = {'title' : titlename};
-        let newVersionIdArray = [];
-        if ( thisresult['json'].hasOwnProperty('version')) {
-          newVersionIdArray = thisresult['json']['version'].split('.');
-        } else {
-          newVersionIdArray = ['0', '0', '0'];
-        } 
-        newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
-        formatted['version'] = newVersionIdArray.join('.'); 
-        formatted['lastEditDate'] = (new Date()).toString();
-        formatted['data'] = thisresult['json']['data'];  // merge this.result in to formatted - so that header attributes appear first in the object.
-        thisresult['json'] = formatted;
-        thisresult['text'] = JSON.stringify(formatted, null, 2);
-        
-        let data: string = JSON.stringify(thisresult['json'], null, 2);
-        let table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});
-        let itemParams = {
-            "TableName":"ptownrules", 
-            "Item": {
-                "ptownrules" : {"S":keyname},
-                "data" : {"S":data}   
-            }
-        };
-  
-        table.putItem(itemParams, function(err, data) { 
-          console.log('putItem');
-            if (err) {
-                console.log(err);
-                window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
-            } else {
-                 window.alert('DynamoDB has been updated');
-                 this.updateLastDynamoDBExportDate();
-                 this.myjsonio.export2(keyname, thisresult, titlename);
-            }
         }.bind(this));
         
         return thisresult;
    }
    
-   updateLastDynamoDBExportDate() {
-        // update last export date to MyJSON
-        let myJSONheaders = new Headers();
-        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
-        
-        let data: string = JSON.stringify({ 'lastDynamoDBExportDate' : (new Date()).toString()}, null, 2);
-        this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders}) 
-          .map(res => res.json())
-          .subscribe(
-            data => console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)),
-            err => window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
-            () => console.log('MyJSON last export date export complete')
-          ); 
-   }
+  
+
    
 
 }

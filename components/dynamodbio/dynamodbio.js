@@ -25,6 +25,15 @@ var Dynamodbio = (function () {
                 'text': data.Item.data.S });
         });
     };
+    Dynamodbio.prototype.updateLastDynamoDBExportDate = function () {
+        // update last export date to MyJSON
+        var myJSONheaders = new http_1.Headers();
+        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+        var data = JSON.stringify({ 'lastDynamoDBExportDate': (new Date()).toString() }, null, 2);
+        this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders })
+            .map(function (res) { return res.json(); })
+            .subscribe(function (data) { return console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)); }, function (err) { return window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)); }, function () { return console.log('MyJSON last export date export complete'); });
+    };
     Dynamodbio.prototype.export = function (keyname, thisresult, titlename, tableNames) {
         if (tableNames === void 0) { tableNames = ['ptownrules', 'ptownrulestest01']; }
         var formatted = { 'title': titlename };
@@ -64,55 +73,8 @@ var Dynamodbio = (function () {
                     this.updateLastDynamoDBExportDate();
                 }
             }.bind(this));
-        });
-        return thisresult;
-    };
-    Dynamodbio.prototype.export2 = function (keyname, thisresult, titlename) {
-        var formatted = { 'title': titlename };
-        var newVersionIdArray = [];
-        if (thisresult['json'].hasOwnProperty('version')) {
-            newVersionIdArray = thisresult['json']['version'].split('.');
-        }
-        else {
-            newVersionIdArray = ['0', '0', '0'];
-        }
-        newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
-        formatted['version'] = newVersionIdArray.join('.');
-        formatted['lastEditDate'] = (new Date()).toString();
-        formatted['data'] = thisresult['json']['data']; // merge this.result in to formatted - so that header attributes appear first in the object.
-        thisresult['json'] = formatted;
-        thisresult['text'] = JSON.stringify(formatted, null, 2);
-        var data = JSON.stringify(thisresult['json'], null, 2);
-        var table = new AWS.DynamoDB({ params: { TableName: 'ptownrules' } });
-        var itemParams = {
-            "TableName": "ptownrules",
-            "Item": {
-                "ptownrules": { "S": keyname },
-                "data": { "S": data }
-            }
-        };
-        table.putItem(itemParams, function (err, data) {
-            console.log('putItem');
-            if (err) {
-                console.log(err);
-                window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
-            }
-            else {
-                window.alert('DynamoDB has been updated');
-                this.updateLastDynamoDBExportDate();
-                this.myjsonio.export2(keyname, thisresult, titlename);
-            }
         }.bind(this));
         return thisresult;
-    };
-    Dynamodbio.prototype.updateLastDynamoDBExportDate = function () {
-        // update last export date to MyJSON
-        var myJSONheaders = new http_1.Headers();
-        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
-        var data = JSON.stringify({ 'lastDynamoDBExportDate': (new Date()).toString() }, null, 2);
-        this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders })
-            .map(function (res) { return res.json(); })
-            .subscribe(function (data) { return console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)); }, function (err) { return window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)); }, function () { return console.log('MyJSON last export date export complete'); });
     };
     Dynamodbio = __decorate([
         core_1.Component({
