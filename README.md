@@ -19,6 +19,10 @@ Use the following command to start watching your files:
 
 >$ tsc --watch -m commonjs -t es5 --emitDecoratorMetadata --experimentalDecorators --jsx react dataminer-app.ts
 
+View using a local webserver:
+
+>$python -m SimpleHTTPServer 8080
+
 To deploy:
 >$ sh publishToEC2.sh
 

@@ -20,7 +20,7 @@ var Unlockprogression = (function () {
     // 
     function Unlockprogression(params, http, myjsonio, dynamodbio, versioning) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/28kay?pretty=1';
+        this.myJsonUrl = 'oz4n58j';
         this.googleDocJsonFeedUrl = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oz4n58j/public/values?alt=json';
         this.http = http;
         this.myjsonio = myjsonio;
@@ -39,20 +39,12 @@ var Unlockprogression = (function () {
             .map(function (res) { return res.json(); })
             .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
     };
-    Unlockprogression.prototype.handleExportToMyJSON = function () {
+    Unlockprogression.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'unlockprogression');
-            }
-            else {
-                window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-        }.bind(this));
-    };
-    Unlockprogression.prototype.handleExportToDynamoDB = function () {
-        this.versioning.verify(function (verified) {
-            if (verified === 1) {
-                this.result = this.dynamodbio.export('oz4n58j', this.result, 'unlockprogression');
+                this.result = this.dynamodbio.export('oz4n58j', this.result, 'unlockprogression', tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

@@ -18,7 +18,7 @@ var Simworkers = (function () {
     // 
     function Simworkers(params, http, myjsonio, dynamodbio, versioning) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/4xb60?pretty=1';
+        this.myJsonUrl = 'oxtnpr4';
         this.googleDocJsonFeedUrl = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oxtnpr4/public/values?alt=json';
         this.http = http;
         this.myjsonio = myjsonio;
@@ -35,20 +35,12 @@ var Simworkers = (function () {
             .map(function (res) { return res.json(); })
             .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
     };
-    Simworkers.prototype.handleExportToMyJSON = function () {
+    Simworkers.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'simworkers');
-            }
-            else {
-                window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-        }.bind(this));
-    };
-    Simworkers.prototype.handleExportToDynamoDB = function () {
-        this.versioning.verify(function (verified) {
-            if (verified === 1) {
-                this.result = this.dynamodbio.export('oxtnpr4', this.result, 'simworkers');
+                this.result = this.dynamodbio.export('oxtnpr4', this.result, 'simworkers', tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

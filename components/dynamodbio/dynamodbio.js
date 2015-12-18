@@ -18,13 +18,15 @@ var Dynamodbio = (function () {
     }
     Dynamodbio.prototype.import = function (myjsonurl, callback) {
         var table = new AWS.DynamoDB({ params: { TableName: 'ptownrules' } });
+        console.log('myjsonurl:' + myjsonurl);
         table.getItem({ Key: { ptownrules: { S: myjsonurl } } }, function (err, data) {
             callback({
                 'json': JSON.parse(data.Item.data.S),
                 'text': data.Item.data.S });
         });
     };
-    Dynamodbio.prototype.export = function (keyname, thisresult, titlename) {
+    Dynamodbio.prototype.export = function (keyname, thisresult, titlename, tableNames) {
+        if (tableNames === void 0) { tableNames = ['ptownrules', 'ptownrulestest01']; }
         var formatted = { 'title': titlename };
         var newVersionIdArray = [];
         if (thisresult['json'].hasOwnProperty('version')) {
@@ -39,7 +41,7 @@ var Dynamodbio = (function () {
         formatted['data'] = thisresult['json']['data']; // merge this.result in to formatted - so that header attributes appear first in the object.
         thisresult['json'] = formatted;
         thisresult['text'] = JSON.stringify(formatted, null, 2);
-        var tableNames = ['ptownrules', 'ptownrulestest01'];
+        //let tableNames = ['ptownrules', 'ptownrulestest01']; 
         var dynamodbPartitionKeyName = 'ptownrules';
         tableNames.forEach(function (tableName) {
             var data = JSON.stringify(thisresult['json'], null, 2);
@@ -58,7 +60,8 @@ var Dynamodbio = (function () {
                     window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
                 }
                 else {
-                    window.alert('DynamoDB has been updated');
+                    window.alert('DynamoDB table: ' + tableName + 'has been updated.');
+                    this.updateLastDynamoDBExportDate();
                 }
             }.bind(this));
         });

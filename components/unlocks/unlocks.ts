@@ -19,7 +19,7 @@ export class Unlocks {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/2hewe?pretty=1';
+    private myJsonUrl: string = 'os7bs54';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/os7bs54/public/values?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
@@ -45,21 +45,13 @@ export class Unlocks {
          );
     }
     
-    handleExportToMyJSON() {
+    handleExportToDynamoDB( evironmentFlag = 'live') {
+      
+      var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
+ 
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.myjsonio.export2(this.myJsonUrl, this.result, 'progression');
-            } else {
-              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-          }.bind(this)
-        );
-    }
-    
-    handleExportToDynamoDB() {
-        this.versioning.verify( function( verified: number) {
-            if (verified===1) {
-              this.result = this.dynamodbio.export('os7bs54', this.result, 'progression');
+              this.result = this.dynamodbio.export('os7bs54', this.result, 'progression', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

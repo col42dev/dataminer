@@ -23,7 +23,7 @@ export class Charactercombatmodifiers {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/22cm6?pretty=1';
+    private myJsonUrl: string = 'oevkvmv';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oevkvmv/public/values?alt=json';
     private characters;
     private columns: Array<Column>;
@@ -37,7 +37,7 @@ export class Charactercombatmodifiers {
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import('oevkvmv',     
+        this.dynamodbio.import(this.myJsonUrl,     
           function( myresult : Object) {
             this.result = myresult;
           }.bind(this));
@@ -54,21 +54,14 @@ export class Charactercombatmodifiers {
          );
     }
     
-    handleExportToMyJSON() {        
-         this.versioning.verify( function( verified: number) {
-            if (verified===1) {
-              this.myjsonio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
-            } else {
-              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-          }.bind(this)
-        );
-    }
     
-    handleExportToDynamoDB() {
+    handleExportToDynamoDB( evironmentFlag = 'live') {
+      
+      var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
+
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export("oevkvmv", this.result, 'characterCombatModifiers');
+              this.result = this.dynamodbio.export(this.myJsonUrl, this.result, 'characterCombatModifiers', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

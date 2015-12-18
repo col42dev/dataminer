@@ -79,22 +79,13 @@ var Dynamicworksheets = (function () {
         //window.alert('Import complete. Now export to persist this change.');
         return; // { 'json':this.dynamicWorksheets, 'text':JSON.stringify(this.dynamicWorksheets, null, 2)};
     };
-    Dynamicworksheets.prototype.handleExportToMyJSON = function () {
-        /*
-          this.versioning.verify( function( verified: number) {
-              if (verified===1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'simvalues');
-              } else {
-                window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-              }
-            }.bind(this)
-          );*/
-    };
-    Dynamicworksheets.prototype.handleExportToDynamoDB = function () {
+    Dynamicworksheets.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         console.log(this.result['worksheetKey'] + ', ' + this.result['title']);
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.result = this.dynamodbio.export(this.result['worksheetKey'], this.result, this.result['title']);
+                this.result = this.dynamodbio.export(this.result['worksheetKey'], this.result, this.result['title'], tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
@@ -126,8 +117,6 @@ var Dynamicworksheets = (function () {
                 }
                 Object.keys(value).forEach(function (subvalue) {
                     if (col.match(/^gsx/)) {
-                        console.log(JSON.stringify(res.feed.entry[rowIndex][col]['$t']));
-                        //console.log(col);
                         simvalues['data']['keys'][key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t'];
                         thisRow[key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t'];
                     }

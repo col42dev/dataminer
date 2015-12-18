@@ -20,13 +20,13 @@ var Charactercombatmodifiers = (function () {
     // 
     function Charactercombatmodifiers(params, http, myjsonio, dynamodbio, versioning) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/22cm6?pretty=1';
+        this.myJsonUrl = 'oevkvmv';
         this.googleDocJsonFeedUrl = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oevkvmv/public/values?alt=json';
         this.http = http;
         this.myjsonio = myjsonio;
         this.dynamodbio = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import('oevkvmv', function (myresult) {
+        this.dynamodbio.import(this.myJsonUrl, function (myresult) {
             this.result = myresult;
         }.bind(this));
     }
@@ -37,20 +37,12 @@ var Charactercombatmodifiers = (function () {
             .map(function (res) { return res.json(); })
             .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
     };
-    Charactercombatmodifiers.prototype.handleExportToMyJSON = function () {
+    Charactercombatmodifiers.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'characterCombatModifiers');
-            }
-            else {
-                window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-        }.bind(this));
-    };
-    Charactercombatmodifiers.prototype.handleExportToDynamoDB = function () {
-        this.versioning.verify(function (verified) {
-            if (verified === 1) {
-                this.result = this.dynamodbio.export("oevkvmv", this.result, 'characterCombatModifiers');
+                this.result = this.dynamodbio.export(this.myJsonUrl, this.result, 'characterCombatModifiers', tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

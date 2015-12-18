@@ -17,7 +17,7 @@ var versioning_1 = require('../versioning/versioning');
 var Unlocks = (function () {
     function Unlocks(params, http, myjsonio, dynamodbio, versioning) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/2hewe?pretty=1';
+        this.myJsonUrl = 'os7bs54';
         this.googleDocJsonFeedUrl = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/os7bs54/public/values?alt=json';
         this.http = http;
         this.myjsonio = myjsonio;
@@ -34,20 +34,12 @@ var Unlocks = (function () {
             .map(function (res) { return res.json(); })
             .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
     };
-    Unlocks.prototype.handleExportToMyJSON = function () {
+    Unlocks.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'progression');
-            }
-            else {
-                window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-        }.bind(this));
-    };
-    Unlocks.prototype.handleExportToDynamoDB = function () {
-        this.versioning.verify(function (verified) {
-            if (verified === 1) {
-                this.result = this.dynamodbio.export('os7bs54', this.result, 'progression');
+                this.result = this.dynamodbio.export('os7bs54', this.result, 'progression', tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

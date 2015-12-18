@@ -24,7 +24,7 @@ export class Playerpowers {
 
   private result: Object = { 'json':{}, 'text':'loading...'};
   private http: Http;
-  private myJsonUrl: string = 'https://api.myjson.com/bins/457gd?pretty=1';
+  private myJsonUrl: string = 'o7sqgzj';
   private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o7sqgzj/public/values?alt=json';
   private rows;
   private columns: Array<Column>;
@@ -55,19 +55,20 @@ export class Playerpowers {
         );
   }
   
-  handleExportToMyJSON() {
-         this.versioning.verify( function( verified: number) {
+   handleExportToDynamoDB( evironmentFlag = 'live') {
+      
+      var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
+      
+      this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.myjsonio.export2(this.myJsonUrl, this.result, 'playerPowers');
+               this.result = this.dynamodbio.export('o7sqgzj', this.result, 'playerPowers', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
           }.bind(this)
         );
-  }
-  
-  handleExportToDynamoDB() {
-        this.result = this.dynamodbio.export('o7sqgzj', this.result, 'playerPowers');
+ 
+       
   }
 
   parseGoogleDocJSON(res) {

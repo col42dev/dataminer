@@ -21,7 +21,7 @@ export class Simkvp {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/4rrxs?pretty=1';
+    private myJsonUrl: string = 'otw4nb';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/otw4nb/public/values?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
@@ -49,23 +49,14 @@ export class Simkvp {
           res => this.result  = this.parseGoogleDocJSON(res)
          );
     }
-    
-    handleExportToMyJSON() {
-        this.versioning.verify( function( verified: number) {
+
+    handleExportToDynamoDB( evironmentFlag = 'live') {
+      
+      var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
+ 
+          this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.myjsonio.export2(this.myJsonUrl, this.result, 'simvalues');
-            } else {
-              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-          }.bind(this)
-        );
-    }
-    
-    
-    handleExportToDynamoDB() {       
-         this.versioning.verify( function( verified: number) {
-            if (verified===1) {
-              this.result = this.dynamodbio.export('otw4nb', this.result, 'simvalues');
+              this.result = this.dynamodbio.export(this.myJsonUrl, this.result, 'simvalues', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

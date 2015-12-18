@@ -11,7 +11,7 @@ var core_1 = require('angular2/core');
 var http_1 = require('angular2/http');
 var Versioning = (function () {
     function Versioning(http) {
-        this.version = '0.0.51';
+        this.version = '0.0.52';
         this.liveVersion = '';
         this.hasLatest = 0;
         this.verifiedCallback = null;

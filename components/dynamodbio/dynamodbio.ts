@@ -26,6 +26,7 @@ export class Dynamodbio {
   
   import( myjsonurl : string, callback : Function) {
     var table = new AWS.DynamoDB({params: {TableName: 'ptownrules'}});  
+    console.log('myjsonurl:' + myjsonurl);
     table.getItem({Key: {ptownrules: {S: myjsonurl}}}, function(err, data) {
       callback({ 
             'json':JSON.parse(data.Item.data.S ),
@@ -34,7 +35,7 @@ export class Dynamodbio {
   }
    
    
-  export( keyname: string, thisresult: Object, titlename: string) {
+  export( keyname: string, thisresult: Object, titlename: string, tableNames:string[] = ['ptownrules', 'ptownrulestest01']) {
  
         let formatted = {'title' : titlename};
         let newVersionIdArray = [];
@@ -50,7 +51,7 @@ export class Dynamodbio {
         thisresult['json'] = formatted;
         thisresult['text'] = JSON.stringify(formatted, null, 2);
         
-        let tableNames = ['ptownrules', 'ptownrulestest01']; 
+        //let tableNames = ['ptownrules', 'ptownrulestest01']; 
         let dynamodbPartitionKeyName = 'ptownrules';
         
         tableNames.forEach( function ( tableName) {
@@ -71,8 +72,8 @@ export class Dynamodbio {
                   console.log(err);
                   window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
               } else {
-                  window.alert('DynamoDB has been updated');
-                  //this.updateLastDynamoDBExportDate();
+                  window.alert('DynamoDB table: ' + tableName + 'has been updated.');
+                  this.updateLastDynamoDBExportDate();
               }
           }.bind(this));
                 

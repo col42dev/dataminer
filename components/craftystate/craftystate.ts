@@ -19,7 +19,7 @@ declare var AWS:any;
 export class Craftystate {
     private result: Object = { 'json':{}, 'text':'loading...'};;
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/1a9rm?pretty=1';
+    private myJsonUrl: string = '1a9rm';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio; 
         

@@ -17,9 +17,11 @@ last edit date: {{result['json']['lastEditDate']}}
     <tbody>
         <tr *ngFor="#row of dynamicWorksheetNames">
             <td>{{row}}</td>
-            <td><button (click)="handleImportFromGoogleDocs(row)"><span class="glyphicon glyphicon-import"></span>Import from google document</button>
+            <td><button (click)="handleImportFromGoogleDocs(row)"><span class="glyphicon glyphicon-import"></span>Google sheet</button>
 </td>
-            <td><button (click)="handleExportToDynamoDB()"><span class="glyphicon glyphicon-import"></span>Export to AWS DynamoDB</button>
+            <td><button (click)="handleExportToDynamoDB()"><span class="glyphicon glyphicon-export"></span>Live env</button>
+</td>
+           <td><button (click)="handleExportToDynamoDB('test')"><span class="glyphicon glyphicon-export"></span>Test env</button>
 </td>
         </tr>
     </tbody>

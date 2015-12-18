@@ -18,7 +18,7 @@ var Mapstate = (function () {
     // 
     function Mapstate(params, http, myjsonio, dynamodbio, versioning) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/1184a?pretty=1';
+        this.myJsonUrl = 'o5onybx';
         this.googleDocJsonFeedUrl = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o5onybx/public/values?alt=json';
         this.http = http;
         this.myjsonio = myjsonio;
@@ -35,20 +35,12 @@ var Mapstate = (function () {
             .map(function (res) { return res.json(); })
             .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
     };
-    Mapstate.prototype.handleExportToMyJSON = function () {
+    Mapstate.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'mapstate');
-            }
-            else {
-                window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-        }.bind(this));
-    };
-    Mapstate.prototype.handleExportToDynamoDB = function () {
-        this.versioning.verify(function (verified) {
-            if (verified === 1) {
-                this.result = this.dynamodbio.export('o5onybx', this.result, 'mapstate');
+                this.result = this.dynamodbio.export('o5onybx', this.result, 'mapstate', tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);

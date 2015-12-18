@@ -15,9 +15,9 @@ last edit date: {{result['json']['lastEditDate']}}
 
 
 <pre>
-<button (click)="handleExportToDynamoDB()"><span class="glyphicon glyphicon-export"></span> Export to AWS DynamoDB:</button>
+<button (click)="handleExportToDynamoDB()"><span class="glyphicon glyphicon-export"></span> Live env export:</button>
 
-<!--button (click)="handleExportToMyJSON()"><span class="glyphicon glyphicon-export"></span> Export to myjson:</button-->
+<button (click)="handleExportToDynamoDB('test')"><span class="glyphicon glyphicon-export"></span> Test env export:</button> 
 </pre>
 
 <grid [rows]="rows" [columns]="columns"></grid>

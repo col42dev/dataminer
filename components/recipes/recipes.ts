@@ -19,7 +19,7 @@ export class Recipes {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/51viy?pretty=1';
+    private myJsonUrl: string = 'od3otrm';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/od3otrm/public/values?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
@@ -47,21 +47,13 @@ export class Recipes {
          );
     }
     
-    handleExportToMyJSON() {
-        this.versioning.verify( function( verified: number) {
-            if (verified===1) {
-              this.myjsonio.export2(this.myJsonUrl, this.result, 'recipes');
-            } else {
-              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-          }.bind(this)
-        );
-    }
-    
-    handleExportToDynamoDB() {
+   handleExportToDynamoDB( evironmentFlag = 'live') {
+      
+      var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
+ 
          this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export('od3otrm', this.result, 'recipes');
+              this.result = this.dynamodbio.export('od3otrm', this.result, 'recipes', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }

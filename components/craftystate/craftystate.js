@@ -17,7 +17,7 @@ var Craftystate = (function () {
     // 
     function Craftystate(params, http, myjsonio, dynamodbio) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/1a9rm?pretty=1';
+        this.myJsonUrl = '1a9rm';
         this.http = http;
         this.myjsonio = myjsonio;
         this.dynamodbio = dynamodbio;

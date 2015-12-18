@@ -19,7 +19,7 @@ var versioning_1 = require('../versioning/versioning');
 var Playerpowers = (function () {
     function Playerpowers(params, http, myjsonio, dynamodbio, versioning) {
         this.result = { 'json': {}, 'text': 'loading...' };
-        this.myJsonUrl = 'https://api.myjson.com/bins/457gd?pretty=1';
+        this.myJsonUrl = 'o7sqgzj';
         this.googleDocJsonFeedUrl = 'https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o7sqgzj/public/values?alt=json';
         this.http = http;
         this.myjsonio = myjsonio;
@@ -38,18 +38,17 @@ var Playerpowers = (function () {
             .map(function (res) { return res.json(); })
             .subscribe(function (res) { return _this.result = _this.parseGoogleDocJSON(res); });
     };
-    Playerpowers.prototype.handleExportToMyJSON = function () {
+    Playerpowers.prototype.handleExportToDynamoDB = function (evironmentFlag) {
+        if (evironmentFlag === void 0) { evironmentFlag = 'live'; }
+        var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
         this.versioning.verify(function (verified) {
             if (verified === 1) {
-                this.myjsonio.export2(this.myJsonUrl, this.result, 'playerPowers');
+                this.result = this.dynamodbio.export('o7sqgzj', this.result, 'playerPowers', tables);
             }
             else {
                 window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
         }.bind(this));
-    };
-    Playerpowers.prototype.handleExportToDynamoDB = function () {
-        this.result = this.dynamodbio.export('o7sqgzj', this.result, 'playerPowers');
     };
     Playerpowers.prototype.parseGoogleDocJSON = function (res) {
         var playerPowersValues = this.result['json'];

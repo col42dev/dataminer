@@ -19,7 +19,7 @@ export class Simworkers {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = 'https://api.myjson.com/bins/4xb60?pretty=1';
+    private myJsonUrl: string = 'oxtnpr4';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/oxtnpr4/public/values?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
@@ -46,21 +46,13 @@ export class Simworkers {
          );
     }
     
-    handleExportToMyJSON() {
+    handleExportToDynamoDB( evironmentFlag = 'live') {
+      
+      var tables = (evironmentFlag === 'live') ? ['ptownrules', 'ptownrulestest01'] : ['ptownrulestest01'];
+ 
         this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.myjsonio.export2(this.myJsonUrl, this.result, 'simworkers');
-            } else {
-              window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
-            }
-          }.bind(this)
-        );
-    }
-    
-    handleExportToDynamoDB() {
-        this.versioning.verify( function( verified: number) {
-            if (verified===1) {
-              this.result = this.dynamodbio.export('oxtnpr4', this.result, 'simworkers');
+              this.result = this.dynamodbio.export('oxtnpr4', this.result, 'simworkers', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
