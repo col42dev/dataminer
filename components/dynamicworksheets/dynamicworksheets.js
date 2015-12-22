@@ -118,7 +118,12 @@ var Dynamicworksheets = (function () {
                 Object.keys(value).forEach(function (subvalue) {
                     if (col.match(/^gsx/)) {
                         simvalues['data']['keys'][key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t'];
-                        thisRow[key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t'];
+                        if (!isNaN(res.feed.entry[rowIndex][col]['$t'])) {
+                            thisRow[key][col.substring(4)] = parseInt(res.feed.entry[rowIndex][col]['$t'], 10);
+                        }
+                        else {
+                            thisRow[key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t'];
+                        }
                     }
                 });
             }
