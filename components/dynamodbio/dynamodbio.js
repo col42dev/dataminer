@@ -29,10 +29,25 @@ var Dynamodbio = (function () {
         // update last export date to MyJSON
         var myJSONheaders = new http_1.Headers();
         myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+        // myJSONheaders.append('Content-Type', 'application/x-www-form-urlencoded');
+        /// myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+        // myJSONheaders.append( 'Cache-Control', 'no-cache');
+        //myJSONheaders.append( 'Access-Control-Allow-Origin', '*');
+        //myJSONheaders.append( 'Access-Control-Allow-Methods', 'GET, PUT, POST');
+        console.log('...');
         var data = JSON.stringify({ 'lastDynamoDBExportDate': (new Date()).toString() }, null, 2);
         this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders })
             .map(function (res) { return res.json(); })
             .subscribe(function (data) { return console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)); }, function (err) { return window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)); }, function () { return console.log('MyJSON last export date export complete'); });
+        this.http.post('http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com:5500/backfillerapi/process', data, {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        })
+            .map(function (res) { return res.json(); })
+            .subscribe(function (data) { return console.log('backfiller api  data:' + JSON.stringify(data)); }, function (err) { return function (err) {
+            if (JSON.stringify(err) !== '{}') {
+                window.alert('ERROR: backfiller api:' + JSON.stringify(err));
+            }
+        }; }, function () { return console.log('backfiller api export complete'); });
     };
     Dynamodbio.prototype.export = function (keyname, thisresult, titlename, tableNames) {
         if (tableNames === void 0) { tableNames = ['ptownrules', 'ptownrulestest01']; }
@@ -69,8 +84,10 @@ var Dynamodbio = (function () {
                     window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
                 }
                 else {
-                    window.alert('DynamoDB table: ' + tableName + 'has been updated.');
-                    this.updateLastDynamoDBExportDate();
+                    window.alert('DynamoDB table: ' + tableName + ' has been updated.');
+                    if (tableName === 'ptownrules') {
+                        this.updateLastDynamoDBExportDate();
+                    }
                 }
             }.bind(this));
         }.bind(this));

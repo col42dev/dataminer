@@ -37,15 +37,46 @@ export class Dynamodbio {
   updateLastDynamoDBExportDate() {
         // update last export date to MyJSON
         let myJSONheaders = new Headers();
-        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+       myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+       // myJSONheaders.append('Content-Type', 'application/x-www-form-urlencoded');
+        /// myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
+       // myJSONheaders.append( 'Cache-Control', 'no-cache');
+        //myJSONheaders.append( 'Access-Control-Allow-Origin', '*');
+         //myJSONheaders.append( 'Access-Control-Allow-Methods', 'GET, PUT, POST');
+        
+        console.log('...');
+    
         
         let data: string = JSON.stringify({ 'lastDynamoDBExportDate' : (new Date()).toString()}, null, 2);
-        this.http.put(this.lastExportDateMyJSONURL, data, { headers: myJSONheaders}) 
+        
+        this.http.put(this.lastExportDateMyJSONURL, data, 
+        { headers: myJSONheaders}) 
           .map(res => res.json())
           .subscribe(
             data => console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)),
             err => window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
             () => console.log('MyJSON last export date export complete')
+          ); 
+          
+         this.http.post(
+             'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com:5500/backfillerapi/process', 
+             data, 
+            { 
+                'Content-Type': 'application/x-www-form-urlencoded'
+                //'Cache-Control': 'no-cache',
+                //'Access-Control-Allow-Headers': 'Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With',
+                //'Access-Control-Allow-Origin': '*',
+                //'Access-Control-Allow-Methods': 'GET, PUT, POST'
+            }) 
+          .map(res => res.json())
+          .subscribe(
+            data => console.log('backfiller api  data:' + JSON.stringify(data)),
+            err => function(err) {
+                if ( JSON.stringify(err) !== '{}') {
+                    window.alert('ERROR: backfiller api:' + JSON.stringify(err));
+                }
+            },
+            () => console.log('backfiller api export complete')
           ); 
   }
    
@@ -86,8 +117,10 @@ export class Dynamodbio {
                   console.log(err);
                   window.alert('ERROR: putItem Failed:' + JSON.stringify(itemParams));
               } else {
-                  window.alert('DynamoDB table: ' + tableName + 'has been updated.');
-                  this.updateLastDynamoDBExportDate();
+                  window.alert('DynamoDB table: ' + tableName + ' has been updated.');
+                  if (tableName === 'ptownrules') {
+                    this.updateLastDynamoDBExportDate();
+                  }
               }
           }.bind(this));
                 
