@@ -34,21 +34,14 @@ export class Dynamodbio {
     });  
   }
    
-  updateLastDynamoDBExportDate() {
+  updateLastDynamoDBExportDate( exportComment) {
         // update last export date to MyJSON
         let myJSONheaders = new Headers();
-       myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
-       // myJSONheaders.append('Content-Type', 'application/x-www-form-urlencoded');
-        /// myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
-       // myJSONheaders.append( 'Cache-Control', 'no-cache');
-        //myJSONheaders.append( 'Access-Control-Allow-Origin', '*');
-         //myJSONheaders.append( 'Access-Control-Allow-Methods', 'GET, PUT, POST');
-        
-        console.log('...');
+        myJSONheaders.append('Content-Type', 'application/json; charset=utf-8');
     
-        
         let data: string = JSON.stringify({ 'lastDynamoDBExportDate' : (new Date()).toString()}, null, 2);
-        
+      
+  
         this.http.put(this.lastExportDateMyJSONURL, data, 
         { headers: myJSONheaders}) 
           .map(res => res.json())
@@ -57,20 +50,20 @@ export class Dynamodbio {
             err => window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
             () => console.log('MyJSON last export date export complete')
           ); 
+         
+        let dataminerHeaders = new Headers();
+        dataminerHeaders.append('Content-Type', 'application/json');
+        let formData:string =  JSON.stringify({'comment': exportComment});
           
+         console.log('comment:' + formData);
+         //exportComment
          this.http.post(
-             'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com:5500/backfillerapi/process', 
-             data, 
-            { 
-                'Content-Type': 'application/x-www-form-urlencoded'
-                //'Cache-Control': 'no-cache',
-                //'Access-Control-Allow-Headers': 'Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With',
-                //'Access-Control-Allow-Origin': '*',
-                //'Access-Control-Allow-Methods': 'GET, PUT, POST'
-            }) 
+            'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com:5500/backfillerapi/process', 
+            formData, 
+            { headers: dataminerHeaders}) 
           .map(res => res.json())
           .subscribe(
-            data => console.log('backfiller api  data:' + JSON.stringify(data)),
+            data => console.log('backfiller api  data:' + formData),
             err => function(err) {
                 if ( JSON.stringify(err) !== '{}') {
                     window.alert('ERROR: backfiller api:' + JSON.stringify(err));
@@ -92,6 +85,12 @@ export class Dynamodbio {
         newVersionIdArray[2] = parseInt(newVersionIdArray[2], 10) + 1;
         formatted['version'] = newVersionIdArray.join('.'); 
         formatted['lastEditDate'] = (new Date()).toString();
+  
+        let comment = 'no comment';      
+        if ( thisresult.hasOwnProperty('comment')) {
+          comment = thisresult['comment'];
+        } 
+        formatted['comment'] = comment;
         formatted['data'] = thisresult['json']['data'];  // merge this.result in to formatted - so that header attributes appear first in the object.
         thisresult['json'] = formatted;
         thisresult['text'] = JSON.stringify(formatted, null, 2);
@@ -119,7 +118,7 @@ export class Dynamodbio {
               } else {
                   window.alert('DynamoDB table: ' + tableName + ' has been updated.');
                   if (tableName === 'ptownrules') {
-                    this.updateLastDynamoDBExportDate();
+                    this.updateLastDynamoDBExportDate( thisresult['json']['comment']);
                   }
               }
           }.bind(this));

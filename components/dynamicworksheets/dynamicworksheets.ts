@@ -21,7 +21,6 @@ export class Dynamicworksheets {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = ''; //https://api.myjson.com/bins/4rrxs?pretty=1';
     private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/worksheets/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/public/basic?alt=json';
     private myjsonio : Myjsonio;
     private dynamodbio : Dynamodbio;
@@ -30,17 +29,14 @@ export class Dynamicworksheets {
     private dynamicWorksheetNames = [];
     private dynamicWorksheets = [];
    
+
+
     // 
     constructor(params: RouteParams, http: Http, myjsonio: Myjsonio, dynamodbio: Dynamodbio, versioning: Versioning){
         this.http = http;
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.versioning = versioning;
-        /*
-        this.dynamodbio.import(this.myJsonUrl, 
-          function(myresult : Object) {
-            this.result = myresult;
-          }.bind(this));*/
         this.dynamicWorksheetNames = [];
         this.dynamicWorksheets = [];
     }
@@ -131,7 +127,6 @@ export class Dynamicworksheets {
     
          this.versioning.verify( function( verified: number) {
             if (verified===1) {
-    
               this.result = this.dynamodbio.export(this.result['worksheetKey'], this.result, this.result['title'], tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
@@ -142,21 +137,13 @@ export class Dynamicworksheets {
     
     parseGoogleDocJSON(res, worksheetKey) {
       
-      //let  simvalues = this.result['json'];
-      //let title = simvalues['title'];
-      //let version = simvalues['version'];
-      //let lastEditDate = simvalues['lastEditDate'];
       
+      if ( !this.result.hasOwnProperty('comment')) {
+          this.result['comment'] = 'no comment';
+      }
       
       var simvalues = this.result['json'];
       simvalues['data'] = {};
-      
-      //simvalues['title'] = res.feed.entry[row]['title']['$t'];
-      //simvalues['version'] = version;
-      //simvalues['lastEditDate'] = lastEditDate;
-
-   
-   
       simvalues['data']['rows'] = [];
       simvalues['data']['keys'] = {};
 
@@ -178,13 +165,14 @@ export class Dynamicworksheets {
             
             Object.keys(value).forEach( function( subvalue) {
               if (col.match(/^gsx/)) {
-                simvalues['data']['keys'][key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t']; 
                 
                 if (!isNaN(res.feed.entry[rowIndex][col]['$t'])) {
                     thisRow[key][col.substring(4)] = parseInt( res.feed.entry[rowIndex][col]['$t'], 10);
                 } else {              
                     thisRow[key][col.substring(4)] = res.feed.entry[rowIndex][col]['$t'];  
                 }
+                
+                simvalues['data']['keys'][key][col.substring(4)] = thisRow[key][col.substring(4)]; 
               }
             });         
          }
@@ -195,7 +183,7 @@ export class Dynamicworksheets {
       
       window.alert('Import complete. Now export to persist this change.');
        
-      return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2), 'title': res.feed['title']['$t'], 'worksheetKey': worksheetKey};
+      return { 'json':simvalues, 'text':JSON.stringify(simvalues, null, 2), 'title': res.feed['title']['$t'], 'worksheetKey': worksheetKey, 'comment' : this.result['comment']};
     }
 
 }
