@@ -9,9 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('angular2/core');
 var http_1 = require('angular2/http');
+require('rxjs/add/operator/retry');
+require('rxjs/add/operator/timeout');
+require('rxjs/add/operator/delay');
+require('rxjs/add/operator/map');
 var Versioning = (function () {
     function Versioning(http) {
-        this.version = '0.0.55';
+        this.version = '0.0.56';
         this.liveVersion = '';
         this.hasLatest = 0;
         this.verifiedCallback = null;
@@ -23,8 +27,15 @@ var Versioning = (function () {
         this.verifiedCallback = verifiedCallback;
         this.http
             .get(this.myJSONVersionURL)
+            .timeout(1000, new Error('versioning request timeout'))
             .map(function (res) { return res.json(); })
-            .subscribe(function (res) { return _this.verifyLatestVersion(res); });
+            .subscribe(function (res) { return _this.verifyLatestVersion(res); }, function (err) { return _this.verifyError(err); }, function () { return console.log('Random Quote Complete'); });
+    };
+    Versioning.prototype.verifyError = function (err) {
+        // in case of myjson error assume latest version is loaded.
+        console.log(err);
+        console.log('unable to verify that dataminer version is up to date');
+        this.hasLatest = 1;
     };
     Versioning.prototype.verifyLatestVersion = function (latestVersion) {
         this.liveVersion = latestVersion['dataminer']['liveVersion'];
