@@ -15,14 +15,13 @@ import 'rxjs/add/operator/map';
   pipes: []
 }) 
 export class Versioning {
-  // Stores dataminer app versioning string on myJSON.
 
   http: Http;
-  version = '0.0.56';
+  version = '0.0.59';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
-  private myJSONVersionURL: string = 'https://api.myjson.com/bins/1t5wx';
+  private packageJSONURL: string = 'http://cors.io/?u='+'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com/dataminer/package.json'; //use proxy http://cors.io/
   
     constructor( http: Http) {
       this.http = http; 
@@ -31,18 +30,20 @@ export class Versioning {
     verify( verifiedCallback: Function) {
       this.verifiedCallback = verifiedCallback;
       this.http
-        .get(this.myJSONVersionURL)
-        .timeout(1000, new Error('versioning request timeout'))
+        .get(this.packageJSONURL)
+        .timeout(1500, new Error('versioning request response timedout'))
         .map(res => res.json())
         .subscribe(
           res => this.verifyLatestVersion(res),
           err => this.verifyError(err),
-           () => console.log('Random Quote Complete')
+           () => console.log('fetch live version complete')
         );      
+        
+        
     }
   
     verifyError(err) {
-        // in case of myjson error assume latest version is loaded.
+        // in case of http error assume latest version is loaded.
         console.log(err );
         console.log('unable to verify that dataminer version is up to date');
         this.hasLatest = 1;
@@ -50,9 +51,9 @@ export class Versioning {
     
     verifyLatestVersion(latestVersion) {
       
-      this.liveVersion = latestVersion['dataminer']['liveVersion'];
+      this.liveVersion = latestVersion['version'];
       
-      let liveVersionIdArray = latestVersion['dataminer']['liveVersion'].split('.');
+      let liveVersionIdArray = latestVersion['version'].split('.');
       let liveVersionMinorIndex:number = parseInt(liveVersionIdArray[2], 10);
    
       let loadedVersionIdArray = this.version.split('.');

@@ -15,31 +15,31 @@ require('rxjs/add/operator/delay');
 require('rxjs/add/operator/map');
 var Versioning = (function () {
     function Versioning(http) {
-        this.version = '0.0.56';
+        this.version = '0.0.59';
         this.liveVersion = '';
         this.hasLatest = 0;
         this.verifiedCallback = null;
-        this.myJSONVersionURL = 'https://api.myjson.com/bins/1t5wx';
+        this.packageJSONURL = 'http://cors.io/?u=' + 'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com/dataminer/package.json'; //use proxy http://cors.io/
         this.http = http;
     }
     Versioning.prototype.verify = function (verifiedCallback) {
         var _this = this;
         this.verifiedCallback = verifiedCallback;
         this.http
-            .get(this.myJSONVersionURL)
-            .timeout(1000, new Error('versioning request timeout'))
+            .get(this.packageJSONURL)
+            .timeout(1500, new Error('versioning request response timedout'))
             .map(function (res) { return res.json(); })
-            .subscribe(function (res) { return _this.verifyLatestVersion(res); }, function (err) { return _this.verifyError(err); }, function () { return console.log('Random Quote Complete'); });
+            .subscribe(function (res) { return _this.verifyLatestVersion(res); }, function (err) { return _this.verifyError(err); }, function () { return console.log('fetch live version complete'); });
     };
     Versioning.prototype.verifyError = function (err) {
-        // in case of myjson error assume latest version is loaded.
+        // in case of http error assume latest version is loaded.
         console.log(err);
         console.log('unable to verify that dataminer version is up to date');
         this.hasLatest = 1;
     };
     Versioning.prototype.verifyLatestVersion = function (latestVersion) {
-        this.liveVersion = latestVersion['dataminer']['liveVersion'];
-        var liveVersionIdArray = latestVersion['dataminer']['liveVersion'].split('.');
+        this.liveVersion = latestVersion['version'];
+        var liveVersionIdArray = latestVersion['version'].split('.');
         var liveVersionMinorIndex = parseInt(liveVersionIdArray[2], 10);
         var loadedVersionIdArray = this.version.split('.');
         var loadedVersionMinorIndex = parseInt(loadedVersionIdArray[2], 10);
