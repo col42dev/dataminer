@@ -14,6 +14,7 @@ import { Craftystate } from './components/craftystate/craftystate';
 import { Playerpowers } from './components/playerpowers/playerpowers';
 import { Grid } from './components/grid/grid';
 import { Dynamicworksheets } from './components/dynamicworksheets/dynamicworksheets';
+import { Eventscheduler } from './components/eventscheduler/eventscheduler';
 
 import {ROUTER_DIRECTIVES, RouteConfig, Route} from 'angular2/router';
 
@@ -43,6 +44,7 @@ import {
    new Route({path: '/craftystate', component: Craftystate, name: 'Craftystate'}),
    new Route({path: '/playerpowers', component: Playerpowers, name: 'Playerpowers'}),
    new Route({path: '/dynamicworksheets', component: Dynamicworksheets, name: 'Dynamicworksheets'}),
+   new Route({path: '/eventscheduler', component: Eventscheduler, name: 'Eventscheduler'}),
  
  
 ])

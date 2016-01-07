@@ -20,6 +20,7 @@ var unlockprogression_1 = require('./components/unlockprogression/unlockprogress
 var craftystate_1 = require('./components/craftystate/craftystate');
 var playerpowers_1 = require('./components/playerpowers/playerpowers');
 var dynamicworksheets_1 = require('./components/dynamicworksheets/dynamicworksheets');
+var eventscheduler_1 = require('./components/eventscheduler/eventscheduler');
 var router_1 = require('angular2/router');
 var router_2 = require('angular2/router');
 var ExporterPage = (function () {
@@ -47,6 +48,7 @@ var ExporterPage = (function () {
             new router_1.Route({ path: '/craftystate', component: craftystate_1.Craftystate, name: 'Craftystate' }),
             new router_1.Route({ path: '/playerpowers', component: playerpowers_1.Playerpowers, name: 'Playerpowers' }),
             new router_1.Route({ path: '/dynamicworksheets', component: dynamicworksheets_1.Dynamicworksheets, name: 'Dynamicworksheets' }),
+            new router_1.Route({ path: '/eventscheduler', component: eventscheduler_1.Eventscheduler, name: 'Eventscheduler' }),
         ]), 
         __metadata('design:paramtypes', [router_2.Location])
     ], ExporterPage);

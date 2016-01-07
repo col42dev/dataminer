@@ -28,6 +28,8 @@
     <script src="node_modules/reflect-metadata/Reflect.js"></script>
     <script src="node_modules/rxjs/bundles/Rx.js"></script>
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script src='https://apis.google.com/js/client.js?onload=handleClientLoad'></script>
+    
 
     <script>
         System.config({
@@ -65,6 +67,8 @@
 System.import('./dataminer-app');
 AWS.config.region = 'eu-west-1';
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: ''});
+gapi.client.setApiKey('');
+	 
 </script>
 
    

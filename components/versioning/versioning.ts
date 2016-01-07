@@ -17,7 +17,7 @@ import 'rxjs/add/operator/map';
 export class Versioning {
 
   http: Http;
-  version = '0.0.59';
+  version = '0.0.60';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
