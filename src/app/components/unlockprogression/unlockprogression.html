@@ -1,0 +1,26 @@
+<h4><a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=2124114841">Progression Unlocks</a></h4>
+
+This exporter will automatically include new rows and columns added to the <a href="https://docs.google.com/spreadsheets/d/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/edit#gid=2124114841">Progressions Unlocks</a> spreadsheet tab.
+
+<pre>
+version: {{result['json']['version']}}
+last edit date: {{result['json']['lastEditDate']}}
+</pre>
+
+<pre>
+<button (click)="handleImportFromGoogleDocs()"><span class="glyphicon glyphicon-import"></span> Import from google document:</button>  {{googleDocJsonFeedUrl}}
+</pre>
+
+
+<pre>
+<button (click)="handleExportToDynamoDB()"><span class="glyphicon glyphicon-export"></span> Live env export:</button>
+
+<button (click)="handleExportToDynamoDB('test')"><span class="glyphicon glyphicon-export"></span> Test env export:</button> 
+</pre>
+
+
+<p></p>
+<!--grid [rows]="categories" [columns]="columns"></grid-->
+
+<br/>
+<textarea readonly cols="50" rows="20"  style="float: right; width:100%">{{result.text}}</textarea>
