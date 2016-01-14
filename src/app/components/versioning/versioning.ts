@@ -18,11 +18,11 @@ import 'rxjs/add/operator/map';
 export class Versioning {
 
   http: Http;
-  version = '0.0.60';
+  version = '0.0.61';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
-  private packageJSONURL: string = 'http://cors.io/?u='+'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com/dataminer/package.json'; //use proxy http://cors.io/
+  private packageJSONURL: string = 'http://cors.io/?u='+'http://ec2-54-67-81-203.us-west-1.compute.amazonaws.com/dataminerslice/package.json'; //use proxy http://cors.io/
   
     constructor( http: Http) {
       this.http = http; 

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Dataminer</title>
+  <title>Dataminer Slice Prototype</title>
   <base href=".">
   <script src="vendor/angular2/bundles/angular2-polyfills.js"></script>
   {{content-for 'head'}}
@@ -39,7 +39,7 @@
     });
     System.import('app.js').then(null, console.error.bind(console));
     AWS.config.region = 'eu-west-1';
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: ''});
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: 'eu-west-1:c2876904-2d5d-4448-9e5a-3bd3acd88ccf'});
 
   </script>
   
