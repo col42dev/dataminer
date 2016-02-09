@@ -18,7 +18,7 @@ import 'rxjs/add/operator/map';
 export class Versioning {
 
   http: Http;
-  version = '0.0.61';
+  version = '0.0.62';
   liveVersion = '';
   hasLatest:number = 0;
   private verifiedCallback:Function = null;
@@ -46,6 +46,10 @@ export class Versioning {
         console.log(err );
         console.log('unable to verify that dataminer version is up to date');
         this.hasLatest = 1;
+
+        if (this.verifiedCallback) {
+          this.verifiedCallback(this.hasLatest);
+        }
     }
     
     verifyLatestVersion(latestVersion) {
