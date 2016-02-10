@@ -47,7 +47,7 @@ export class Dynamodbio {
           .map(res => res.json())
           .subscribe(
             data => console.log('MyJSON updateLastDynamoDBExportDate data:' + JSON.stringify(data)),
-            err => window.alert('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
+            err => console.log('ERROR: MyJSON updateLastDynamoDBExportDate:' + JSON.stringify(err)),
             () => console.log('MyJSON last export date export complete')
           ); 
          
