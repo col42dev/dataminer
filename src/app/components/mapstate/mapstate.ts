@@ -19,8 +19,8 @@ export class Mapstate {
 
     private result: Object = { 'json':{}, 'text':'loading...'};
     private http: Http;
-    private myJsonUrl: string = 'o5onybx';
-    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/o5onybx/public/values?alt=json';
+    private myJsonUrl: string = 'oe4dop5';
+    private googleDocJsonFeedUrl: string ='https://spreadsheets.google.com/feeds/list/1xP0aCx9S4wG_3XN9au5VezJ6xVTnZWNlOLX8l6B69n4/' + this.myJsonUrl + '/public/values?alt=json';
     private myjsonio : Myjson;
     private dynamodbio : Dynamodbio;  
     private versioning: Versioning;
@@ -31,7 +31,7 @@ export class Mapstate {
         this.myjsonio  = myjsonio;
         this.dynamodbio  = dynamodbio;
         this.versioning = versioning;
-        this.dynamodbio.import('o5onybx', 
+        this.dynamodbio.import(this.myJsonUrl, 
           function(myresult : Object) {
             this.result = myresult;
           }.bind(this));
@@ -55,7 +55,7 @@ export class Mapstate {
  
          this.versioning.verify( function( verified: number) {
             if (verified===1) {
-              this.result = this.dynamodbio.export('o5onybx', this.result, 'mapstate', tables);
+              this.result = this.dynamodbio.export(this.myJsonUrl, this.result, 'mapstate', tables);
             } else {
               window.alert('FAILED: you do not have the latest dataminer app version loaded:' + this.versioning.liveVersion);
             }
