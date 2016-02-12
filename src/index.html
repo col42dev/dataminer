@@ -38,6 +38,8 @@
       }
     });
     System.import('app.js').then(null, console.error.bind(console));
+    
+      
     AWS.config.region = 'eu-west-1';
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({IdentityPoolId: ''});
 
